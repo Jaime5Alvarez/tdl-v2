@@ -2,6 +2,7 @@ import { login, signup } from "@/app/login/actions";
 
 export default async function LoginPage() {
 
+
   return (
     <form>
       <label htmlFor="email">Email:</label>
