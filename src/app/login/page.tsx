@@ -1,5 +1,5 @@
 import { login, signup } from "@/app/login/actions";
-import GoogleOneTap from "@/app/components/google-one-tap";
+import GoogleOneTap from "@/app/components/auth/google-one-tap";
 
 export default async function LoginPage() {
 

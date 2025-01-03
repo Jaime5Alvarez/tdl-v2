@@ -78,7 +78,7 @@ const GoogleOneTap = () => {
         src="https://accounts.google.com/gsi/client" 
         onLoad={() => setIsScriptLoaded(true)}
       />
-      <div id="googleButton" />
+      <div id="googleButton" className="fixed top-0 right-0 z-[100]" />
     </>
   )
 }
