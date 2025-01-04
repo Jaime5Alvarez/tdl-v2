@@ -1,10 +1,11 @@
 import { Task } from '@/modules/database/infrastructure/drizzle/schema';
 import { TaskRepository } from '../domain/task-repository';
+import { CreateTaskDto } from '../domain/dto/create-task.dto';
 
 export class CreateTaskUseCase {
   constructor(private taskRepository: TaskRepository) {}
 
-  async execute(task: Omit<Task, 'id'>): Promise<Task> {
-    return await this.taskRepository.create(task);
+  async execute(createTaskDto: CreateTaskDto): Promise<Task> {
+    return await this.taskRepository.create(createTaskDto);
   }
 } 

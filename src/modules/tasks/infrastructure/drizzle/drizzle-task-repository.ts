@@ -3,18 +3,29 @@ import { PostgresJsDatabase } from 'drizzle-orm/postgres-js';
 import { TaskRepository } from '@/modules/tasks/domain/task-repository';
 import * as schema from '@/modules/database/infrastructure/drizzle/schema';
 import { Task } from '@/modules/database/infrastructure/drizzle/schema';
+import { CreateTaskDto } from '../../domain/dto/create-task.dto';
+import { UpdateTaskDto } from '../../domain/dto/update-task.dto';
+
 export class DrizzleTaskRepository implements TaskRepository {
   constructor(private db: PostgresJsDatabase<typeof schema>) {}
 
-  async create(task: Omit<Task, 'id'>): Promise<Task> {
-    const [createdTask] = await this.db.insert(schema.tasks).values(task).returning();
+  async create(createTaskDto: CreateTaskDto): Promise<Task> {
+    const [createdTask] = await this.db.insert(schema.tasks).values({
+      title: createTaskDto.title,
+      description: createTaskDto.description,
+      dueDate: createTaskDto.dueDate?.toISOString(),
+      userId: createTaskDto.userId,
+    }).returning();
     return createdTask as Task;
   }
 
-  async update(id: string, task: Partial<Task>): Promise<Task> {
+  async update(id: string, updateTaskDto: UpdateTaskDto): Promise<Task> {
     const [updatedTask] = await this.db
       .update(schema.tasks)
-      .set({ ...task })
+      .set({
+        ...updateTaskDto,
+        dueDate: updateTaskDto.dueDate?.toISOString(),
+      })
       .where(eq(schema.tasks.id, id))
       .returning();
     return updatedTask as Task;
