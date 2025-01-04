@@ -46,7 +46,7 @@ const GoogleOneTap = () => {
             const { data, error } = await supabase.auth.signInWithIdToken({
               provider: 'google',
               token: response.credential,
-              nonce,
+              nonce
             })
 
             if (error) throw error
