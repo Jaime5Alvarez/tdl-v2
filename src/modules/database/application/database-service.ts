@@ -1,10 +1,7 @@
 import { PostgresJsDatabase } from 'drizzle-orm/postgres-js';
-
-import * as schema from '../../../db/schema';
-
 import { IDatabaseService } from '../domain/interfaces';
 import { DrizzleClient } from '../infrastructure/drizzle/drizzle-client';
-
+import  * as schema from '@/modules/database/infrastructure/drizzle/schema';
 export class DatabaseService implements IDatabaseService {
   private static instance: DatabaseService;
 
