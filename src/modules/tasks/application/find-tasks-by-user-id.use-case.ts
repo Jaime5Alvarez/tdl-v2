@@ -1,6 +1,5 @@
-import { Task } from '@/modules/database/infrastructure/drizzle/schema';
 import { TaskRepository } from '../domain/task-repository';
-
+import { Task } from '../domain/entities/task';
 export class FindTasksByUserIdUseCase {
   constructor(private taskRepository: TaskRepository) {}
 

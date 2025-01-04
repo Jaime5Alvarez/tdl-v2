@@ -1,7 +1,6 @@
-import { Task } from "@/modules/database/infrastructure/drizzle/schema";
 import { CreateTaskDto } from "./dto/create-task.dto";
 import { UpdateTaskDto } from "./dto/update-task.dto";
-
+import { Task } from "./entities/task";
 export interface TaskRepository {
   create(createTaskDto: CreateTaskDto): Promise<Task>;
   update(id: string, updateTaskDto: UpdateTaskDto): Promise<Task>;

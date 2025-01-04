@@ -1,7 +1,6 @@
-import { Task } from '@/modules/database/infrastructure/drizzle/schema';
 import { TaskRepository } from '../domain/task-repository';
 import { UpdateTaskDto } from '../domain/dto/update-task.dto';
-
+import { Task } from '../domain/entities/task';
 export class UpdateTaskUseCase {
   constructor(private taskRepository: TaskRepository) {}
 
