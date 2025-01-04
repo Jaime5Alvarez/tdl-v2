@@ -1,10 +1,10 @@
 import { eq } from 'drizzle-orm';
 import { PostgresJsDatabase } from 'drizzle-orm/postgres-js';
-import { TaskRepository } from '@/modules/tasks/domain/task-repository';
 import * as schema from '@/modules/database/infrastructure/drizzle/schema';
 import { CreateTaskDto } from '../../domain/dto/create-task.dto';
 import { UpdateTaskDto } from '../../domain/dto/update-task.dto';
 import { Task } from '../../domain/entities/task';
+import { TaskRepository } from '../task-repository';
 export class DrizzleTaskRepository implements TaskRepository {
   constructor(private db: PostgresJsDatabase<typeof schema>) {}
 

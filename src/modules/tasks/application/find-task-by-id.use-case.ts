@@ -1,4 +1,4 @@
-import { TaskRepository } from '../domain/task-repository';
+import { TaskRepository } from '../infrastructure/task-repository';
 import { Task } from '../domain/entities/task';
 export class FindTaskByIdUseCase {
   constructor(private taskRepository: TaskRepository) {}

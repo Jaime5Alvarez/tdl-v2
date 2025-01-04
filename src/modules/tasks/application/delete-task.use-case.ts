@@ -1,4 +1,4 @@
-import { TaskRepository } from '../domain/task-repository';
+import { TaskRepository } from '../infrastructure/task-repository';
 
 export class DeleteTaskUseCase {
   constructor(private taskRepository: TaskRepository) {}

@@ -1,4 +1,4 @@
-import { TaskRepository } from '../domain/task-repository';
+import { TaskRepository } from '../infrastructure/task-repository';
 import { UpdateTaskDto } from '../domain/dto/update-task.dto';
 import { Task } from '../domain/entities/task';
 export class UpdateTaskUseCase {
