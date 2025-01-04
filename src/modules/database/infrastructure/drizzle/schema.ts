@@ -1,6 +1,6 @@
 import { pgTable, foreignKey, uuid, text, timestamp, date, boolean } from "drizzle-orm/pg-core"
-import { InferSelectModel, sql } from "drizzle-orm"
-
+import { sql } from "drizzle-orm"
+import { InferSelectModel } from "drizzle-orm"
 
 
 export const users = pgTable("users", {
@@ -24,6 +24,13 @@ export const tasks = pgTable("tasks", {
 	description: text(),
 	dueDate: date("due_date"),
 	completed: boolean().default(false).notNull(),
-});
+	userId: uuid("user_id"),
+}, (table) => [
+	foreignKey({
+			columns: [table.userId],
+			foreignColumns: [users.id],
+			name: "tasks_user_id_fkey"
+		}).onUpdate("cascade").onDelete("cascade"),
+]);
 
 export type Task = InferSelectModel<typeof tasks>;

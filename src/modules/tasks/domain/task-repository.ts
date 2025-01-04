@@ -1,4 +1,4 @@
-import { Task } from './task';
+import { Task } from "@/modules/database/infrastructure/drizzle/schema";
 
 export interface TaskRepository {
   create(task: Omit<Task, 'id'>): Promise<Task>;
