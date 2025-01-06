@@ -7,7 +7,6 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Trash2, Edit2, X, Check } from "lucide-react";
 import { TaskService } from "@/services/task-service";
 import { Task } from "@/modules/tasks/domain/entities/task";
-import { createClient } from "@/utils/supabase/client";
 import { CreateTaskDto } from "@/modules/tasks/domain/dto/create-task.dto";
 import { UpdateTaskDto } from "@/modules/tasks/domain/dto/update-task.dto";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
@@ -20,6 +19,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { useUserStore } from "@/store/user-store";
 
 const taskService = new TaskService();
 
@@ -31,7 +31,6 @@ export default function TodoList() {
   const [editingText, setEditingText] = useState("");
   const [editingDescription, setEditingDescription] = useState("");
   const [isLoading, setIsLoading] = useState(true);
-  const supabase = createClient();
   const [newTaskDate, setNewTaskDate] = useState<Date>();
   const [editingDate, setEditingDate] = useState<Date>();
 
@@ -41,9 +40,7 @@ export default function TodoList() {
 
   const loadTasks = async () => {
     try {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
+      const user = useUserStore.getState().user;
       if (user) {
         const tasks = await taskService.getTasks();
         setTodos(tasks);
@@ -63,15 +60,13 @@ export default function TodoList() {
     setEditingDescription("");
     setEditingDate(undefined);
   };
-  
+
   const addTask = async () => {
     if (newTask.trim() === "") return;
 
     const tempId = crypto.randomUUID();
     try {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
+      const user = useUserStore.getState().user;
       if (user) {
         const optimisticTask: Task = {
           id: tempId,

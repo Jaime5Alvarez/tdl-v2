@@ -4,6 +4,7 @@ import "./globals.css";
 import { createClient } from "@/utils/supabase/server";
 import { ThemeProvider } from "@/components/theme-provider"
 import { Navbar } from "@/components/ui/navbar";
+import { UserProvider } from "@/components/user-provider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -27,6 +28,11 @@ export default async function RootLayout({
 }>) {
   const supabase = await createClient()
   const { data } = await supabase.auth.getUser();
+  
+  const user = data?.user ? {
+    id: data.user.id,
+    email: data.user.email!
+  } : null;
 
   return (
     <html lang="en" suppressHydrationWarning>
@@ -37,6 +43,7 @@ export default async function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
+          <UserProvider user={user} />
           {data?.user && <Navbar />}
           <main className="container mx-auto">
             {children}
