@@ -16,8 +16,10 @@ const taskService = new TaskService()
 export default function TodoList() {
   const [todos, setTodos] = useState<Task[]>([])
   const [newTask, setNewTask] = useState("")
+  const [newTaskDescription, setNewTaskDescription] = useState("")
   const [editingId, setEditingId] = useState<string | null>(null)
   const [editingText, setEditingText] = useState("")
+  const [editingDescription, setEditingDescription] = useState("")
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const supabase = createClient()
@@ -44,7 +46,6 @@ export default function TodoList() {
   const addTask = async () => {
     if (newTask.trim() === "") return
     
-    // Declarar tempId antes del try
     const tempId = crypto.randomUUID()
     try {
       const { data: { user } } = await supabase.auth.getUser()
@@ -53,20 +54,22 @@ export default function TodoList() {
         const optimisticTask: Task = {
           id: tempId,
           title: newTask,
+          description: newTaskDescription || null,
           userId: user.id,
           completed: false,
           createdAt: new Date().toISOString(),
-          description: null,
           dueDate: null,
           isRecurring: null
         }
         
         setTodos(prev => [...prev, optimisticTask])
         setNewTask("")
+        setNewTaskDescription("")
 
         // Realizar la petición real
         const createTaskDto = new CreateTaskDto({
           title: newTask,
+          description: newTaskDescription || undefined,
           userId: user.id,
         })
         
@@ -135,18 +138,23 @@ export default function TodoList() {
   const saveEdit = async () => {
     if (editingId === null) return
     
-    // Declarar originalTask antes del try
     const originalTask = todos.find(t => t.id === editingId)
     try {
       // Optimistic update
       setTodos(prev => prev.map(todo =>
-        todo.id === editingId ? { ...todo, title: editingText } : todo
+        todo.id === editingId ? { 
+          ...todo, 
+          title: editingText,
+          description: editingDescription 
+        } : todo
       ))
       setEditingId(null)
       setEditingText("")
+      setEditingDescription("")
 
       const updateTaskDto = new UpdateTaskDto({
-        title: editingText
+        title: editingText,
+        description: editingDescription || undefined
       })
       
       const updatedTask = await taskService.updateTask(editingId, updateTaskDto)
@@ -173,75 +181,107 @@ export default function TodoList() {
   return (
     <div className="max-w-md mx-auto mt-10 p-6 bg-white rounded-lg shadow-md min-h-[500px] flex flex-col">
       <h1 className="text-2xl font-bold mb-4 text-center">Todo List</h1>
-      <div className="flex mb-4">
+      <div className="flex flex-col gap-2 mb-4">
         <Input
           type="text"
-          placeholder="New task"
+          placeholder="Task title"
           value={newTask}
           onChange={(e) => setNewTask(e.target.value)}
           onKeyDown={(e) => e.key === "Enter" && addTask()}
-          className="flex-grow mr-2"
+          className="flex-grow"
         />
-        <Button onClick={addTask}>Add</Button>
+        <Input
+          type="text"
+          placeholder="Task description (optional)"
+          value={newTaskDescription}
+          onChange={(e) => setNewTaskDescription(e.target.value)}
+          className="flex-grow"
+        />
+        <Button onClick={addTask} className="w-full">Add Task</Button>
       </div>
       <ul className="space-y-2 flex-grow">
         {todos.map((todo) => (
           <li
             key={todo.id}
-            className="flex items-center justify-between p-2 bg-gray-100 rounded"
+            className="flex flex-col p-2 bg-gray-100 rounded"
           >
             {editingId === todo.id ? (
-              <div className="flex items-center flex-grow mr-2">
+              <div className="flex flex-col gap-2">
                 <Input
                   type="text"
                   value={editingText}
                   onChange={(e) => setEditingText(e.target.value)}
-                  className="flex-grow mr-2"
+                  className="flex-grow"
                   autoFocus
+                  placeholder="Task title"
                 />
-                <Button size="icon" onClick={saveEdit} className="mr-1">
-                  <Check className="h-4 w-4" />
-                </Button>
-                <Button size="icon" onClick={() => setEditingId(null)} variant="outline">
-                  <X className="h-4 w-4" />
-                </Button>
+                <Input
+                  type="text"
+                  value={editingDescription}
+                  onChange={(e) => setEditingDescription(e.target.value)}
+                  className="flex-grow"
+                  placeholder="Task description (optional)"
+                />
+                <div className="flex justify-end gap-2">
+                  <Button size="sm" onClick={saveEdit} className="mr-1">
+                    <Check className="h-4 w-4 mr-1" />
+                    Save
+                  </Button>
+                  <Button size="sm" onClick={() => {
+                    setEditingId(null)
+                    setEditingText("")
+                    setEditingDescription("")
+                  }} variant="outline">
+                    <X className="h-4 w-4 mr-1" />
+                    Cancel
+                  </Button>
+                </div>
               </div>
             ) : (
               <>
-                <div className="flex items-center">
-                  <Checkbox
-                    id={`todo-${todo.id}`}
-                    checked={todo.completed ?? false}
-                    onCheckedChange={() => toggleTask(todo.id)}
-                    className="mr-2"
-                  />
-                  <label
-                    htmlFor={`todo-${todo.id}`}
-                    className={`${
-                      todo.completed ? "line-through text-gray-500" : ""
-                    }`}
-                  >
-                    {todo.title}
-                  </label>
-                </div>
-                <div>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => setEditingId(todo.id)}
-                    className="mr-1"
-                    aria-label="Edit task"
-                  >
-                    <Edit2 className="h-4 w-4" />
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => deleteTask(todo.id)}
-                    aria-label="Delete task"
-                  >
-                    <Trash2 className="h-4 w-4" />
-                  </Button>
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center">
+                    <Checkbox
+                      id={`todo-${todo.id}`}
+                      checked={todo.completed ?? false}
+                      onCheckedChange={() => toggleTask(todo.id)}
+                      className="mr-2"
+                    />
+                    <div className="flex flex-col">
+                      <label
+                        htmlFor={`todo-${todo.id}`}
+                        className={`${
+                          todo.completed ? "line-through text-gray-500" : ""
+                        }`}
+                      >
+                        {todo.title}
+                      </label>
+                      {todo.description && (
+                        <span className="text-sm text-gray-500">
+                          {todo.description}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                  <div>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => setEditingId(todo.id)}
+                      className="mr-1"
+                      aria-label="Edit task"
+                    >
+                      <Edit2 className="h-4 w-4" />
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => deleteTask(todo.id)}
+                      aria-label="Delete task"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </div>
                 </div>
               </>
             )}
