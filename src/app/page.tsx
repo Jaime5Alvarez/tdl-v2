@@ -181,7 +181,7 @@ export default function TodoList() {
   if (error) return <div>Error: {error}</div>
 
   return (
-    <Card className="max-w-md mx-auto mt-10 min-h-[500px] flex flex-col">
+    <Card className="max-w-md mx-auto mt-10 min-h-[500px] flex flex-col bg-card">
       <CardHeader className="flex flex-row items-center justify-between space-y-0">
         <CardTitle>Todo List</CardTitle>
       </CardHeader>
