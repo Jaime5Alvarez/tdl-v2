@@ -184,7 +184,6 @@ export default function TodoList() {
     <Card className="max-w-md mx-auto mt-10 min-h-[500px] flex flex-col">
       <CardHeader className="flex flex-row items-center justify-between space-y-0">
         <CardTitle>Todo List</CardTitle>
-        <ThemeToggle />
       </CardHeader>
       <CardContent className="flex flex-col gap-4">
         <div className="flex flex-col gap-2">
