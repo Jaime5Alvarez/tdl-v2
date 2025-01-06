@@ -15,13 +15,4 @@ export class CreateTaskDto {
     this.dueDate = data.dueDate;
     this.userId = data.userId;
   }
-
-  static create(data: {
-    title: string;
-    description?: string;
-    dueDate?: Date;
-    userId: string;
-  }): CreateTaskDto {
-    return new CreateTaskDto(data);
-  }
-} 
+}

@@ -15,13 +15,4 @@ export class UpdateTaskDto {
     this.dueDate = data.dueDate;
     this.completed = data.completed;
   }
-
-  static create(data: Partial<{
-    title: string;
-    description: string;
-    dueDate: Date;
-    completed: boolean;
-  }>): UpdateTaskDto {
-    return new UpdateTaskDto(data);
-  }
 } 
