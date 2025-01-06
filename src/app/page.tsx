@@ -12,6 +12,15 @@ import { CreateTaskDto } from "@/modules/tasks/domain/dto/create-task.dto"
 import { UpdateTaskDto } from "@/modules/tasks/domain/dto/update-task.dto"
 import { ThemeToggle } from "@/components/ui/theme-toggle"
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
+import { format } from "date-fns"
+import { Calendar as CalendarIcon } from "lucide-react"
+import { cn } from "@/lib/utils"
+import { Calendar } from "@/components/ui/calendar"
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover"
 
 const taskService = new TaskService()
 
@@ -25,8 +34,8 @@ export default function TodoList() {
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const supabase = createClient()
-  const [newTaskDueDate, setNewTaskDueDate] = useState<string>("")
-  const [editingDueDate, setEditingDueDate] = useState<string>("")
+  const [newTaskDate, setNewTaskDate] = useState<Date>()
+  const [editingDate, setEditingDate] = useState<Date>()
 
   useEffect(() => {
     loadTasks()
@@ -54,7 +63,6 @@ export default function TodoList() {
     try {
       const { data: { user } } = await supabase.auth.getUser()
       if (user) {
-        // Optimistic update
         const optimisticTask: Task = {
           id: tempId,
           title: newTask,
@@ -62,32 +70,28 @@ export default function TodoList() {
           userId: user.id,
           completed: false,
           createdAt: new Date().toISOString(),
-          dueDate: newTaskDueDate ? new Date(newTaskDueDate).toISOString() : null,
+          dueDate: newTaskDate?.toISOString() || null,
           isRecurring: null
         }
         
         setTodos(prev => [...prev, optimisticTask])
         setNewTask("")
         setNewTaskDescription("")
-        setNewTaskDueDate("")
+        setNewTaskDate(undefined)
 
-        // Realizar la petición real
         const createTaskDto = new CreateTaskDto({
           title: newTask,
           description: newTaskDescription || undefined,
           userId: user.id,
-          dueDate: newTaskDueDate ? new Date(newTaskDueDate) : undefined,
+          dueDate: newTaskDate,
         })
         
         const actualTask = await taskService.createTask(createTaskDto)
-        
-        // Actualizar con la respuesta real
         setTodos(prev => prev.map(task => 
           task.id === tempId ? actualTask : task
         ))
       }
     } catch (error) {
-      // Revertir en caso de error
       setTodos(prev => prev.filter(task => task.id !== tempId))
       setError('Error al crear la tarea')
       console.error(error)
@@ -146,34 +150,30 @@ export default function TodoList() {
     
     const originalTask = todos.find(t => t.id === editingId)
     try {
-      // Optimistic update
       setTodos(prev => prev.map(todo =>
         todo.id === editingId ? { 
           ...todo, 
           title: editingText,
           description: editingDescription,
-          dueDate: editingDueDate ? new Date(editingDueDate).toISOString() : null
+          dueDate: editingDate?.toISOString() || null
         } : todo
       ))
       setEditingId(null)
       setEditingText("")
       setEditingDescription("")
-      setEditingDueDate("")
+      setEditingDate(undefined)
 
       const updateTaskDto = new UpdateTaskDto({
         title: editingText,
         description: editingDescription || undefined,
-        dueDate: editingDueDate ? new Date(editingDueDate) : undefined
+        dueDate: editingDate
       })
       
       const updatedTask = await taskService.updateTask(editingId, updateTaskDto)
-      
-      // Actualizar con la respuesta real
       setTodos(prev => prev.map(todo => 
         todo.id === editingId ? updatedTask : todo
       ))
     } catch (error) {
-      // Revertir en caso de error
       if (originalTask) {
         setTodos(prev => prev.map(todo =>
           todo.id === editingId ? originalTask : todo
@@ -207,12 +207,31 @@ export default function TodoList() {
             value={newTaskDescription}
             onChange={(e) => setNewTaskDescription(e.target.value)}
           />
-          <Input
-            type="date"
-            value={newTaskDueDate}
-            onChange={(e) => setNewTaskDueDate(e.target.value)}
-          />
-          <Button variant={"default"} onClick={addTask} className="w-full">Add Task</Button>
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button
+                variant={"outline"}
+                className={cn(
+                  "w-full justify-start text-left font-normal",
+                  !newTaskDate && "text-muted-foreground"
+                )}
+              >
+                <CalendarIcon className="mr-2 h-4 w-4" />
+                {newTaskDate ? format(newTaskDate, "PPP") : <span>Pick a due date</span>}
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-auto p-0">
+              <Calendar
+                mode="single"
+                selected={newTaskDate}
+                onSelect={setNewTaskDate}
+                initialFocus
+              />
+            </PopoverContent>
+          </Popover>
+          <Button variant={"default"} onClick={addTask} className="w-full">
+            Add Task
+          </Button>
         </div>
         <ul className="space-y-2 flex-grow">
           {todos.map((todo) => (
@@ -237,12 +256,28 @@ export default function TodoList() {
                     className="flex-grow"
                     placeholder="Task description (optional)"
                   />
-                  <Input
-                    type="date"
-                    value={editingDueDate}
-                    onChange={(e) => setEditingDueDate(e.target.value)}
-                    className="flex-grow"
-                  />
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant={"outline"}
+                        className={cn(
+                          "w-full justify-start text-left font-normal",
+                          !editingDate && "text-muted-foreground"
+                        )}
+                      >
+                        <CalendarIcon className="mr-2 h-4 w-4" />
+                        {editingDate ? format(editingDate, "PPP") : <span>Pick a due date</span>}
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0">
+                      <Calendar
+                        mode="single"
+                        selected={editingDate}
+                        onSelect={setEditingDate}
+                        initialFocus
+                      />
+                    </PopoverContent>
+                  </Popover>
                   <div className="flex justify-end gap-2">
                     <Button size="sm" onClick={saveEdit} className="mr-1">
                       <Check className="h-4 w-4 mr-1" />
@@ -252,7 +287,7 @@ export default function TodoList() {
                       setEditingId(null)
                       setEditingText("")
                       setEditingDescription("")
-                      setEditingDueDate("")
+                      setEditingDate(undefined)
                     }} variant="outline">
                       <X className="h-4 w-4 mr-1" />
                       Cancel
@@ -298,7 +333,7 @@ export default function TodoList() {
                           setEditingId(todo.id)
                           setEditingText(todo.title)
                           setEditingDescription(todo.description || "")
-                          setEditingDueDate(todo.dueDate ? new Date(todo.dueDate).toISOString().split('T')[0] : "")
+                          setEditingDate(todo.dueDate ? new Date(todo.dueDate) : undefined)
                         }}
                         className="mr-1"
                         aria-label="Edit task"
