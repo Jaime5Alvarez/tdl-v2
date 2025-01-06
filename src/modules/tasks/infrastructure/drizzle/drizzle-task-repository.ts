@@ -1,4 +1,4 @@
-import { eq } from 'drizzle-orm';
+import { desc, eq } from 'drizzle-orm';
 import { PostgresJsDatabase } from 'drizzle-orm/postgres-js';
 import * as schema from '@/modules/database/infrastructure/drizzle/schema';
 import { CreateTaskDto } from '../../domain/dto/create-task.dto';
@@ -36,16 +36,19 @@ export class DrizzleTaskRepository implements TaskRepository {
 
   async findById(id: string): Promise<Task | null> {
     const task = await this.db.query.tasks.findFirst({
-      where: eq(schema.tasks.id, id)
+      where: eq(schema.tasks.id, id),
+      orderBy: desc(schema.tasks.createdAt)
     });
     if (!task) return null;
     return task;
   }
 
   async findByUserId(userId: string): Promise<Task[]> {
-    const userTasks = await this.db.query.tasks.findMany({
-      where: eq(schema.tasks.userId, userId)
-    });
+    const userTasks = await this.db
+      .select()
+      .from(schema.tasks)
+      .where(eq(schema.tasks.userId, userId))
+      .orderBy(desc(schema.tasks.createdAt));
     return userTasks;
   }
 } 
