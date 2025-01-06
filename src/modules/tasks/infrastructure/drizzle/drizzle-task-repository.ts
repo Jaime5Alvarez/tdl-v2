@@ -43,9 +43,9 @@ export class DrizzleTaskRepository implements TaskRepository {
 
   async findByUserId(userId: string): Promise<Task[]> {
     const userTasks = await this.db.query.tasks.findMany({
-      where: eq(schema.tasks.id, userId)
+      where: eq(schema.tasks.userId, userId)
     });
-    return userTasks as Task[];
+    return userTasks;
   }
 
   async markAsComplete(id: string): Promise<Task> {
