@@ -20,6 +20,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { useUserStore } from "@/store/user-store";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const taskService = new TaskService();
 
@@ -185,191 +186,221 @@ export default function TodoList() {
     }
   };
 
-  if (isLoading) return <div>Cargando...</div>;
 
   return (
     <Card className="max-w-md mx-auto mt-10 min-h-[500px] flex flex-col bg-card">
-      <CardHeader className="flex flex-row items-center justify-between space-y-0">
-        <CardTitle></CardTitle>
-      </CardHeader>
-      <CardContent className="flex flex-col gap-4">
-        <div className="flex flex-col gap-2">
-          <Input
-            type="text"
-            placeholder="Task title"
-            value={newTask}
-            onChange={(e) => setNewTask(e.target.value)}
-            onKeyDown={(e) => e.key === "Enter" && addTask()}
-          />
-          <Input
-            type="text"
-            placeholder="Task description (optional)"
-            value={newTaskDescription}
-            onChange={(e) => setNewTaskDescription(e.target.value)}
-          />
-          <Popover>
-            <PopoverTrigger asChild>
-              <Button
-                variant={"outline"}
-                className={cn(
-                  "w-full justify-start text-left font-normal",
-                  !newTaskDate && "text-muted-foreground"
-                )}
-              >
-                <CalendarIcon className="mr-2 h-4 w-4" />
-                {newTaskDate ? (
-                  format(newTaskDate, "PPP")
-                ) : (
-                  <span>Pick a due date</span>
-                )}
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-auto p-0">
-              <Calendar
-                mode="single"
-                selected={newTaskDate}
-                onSelect={setNewTaskDate}
-                initialFocus
-              />
-            </PopoverContent>
-          </Popover>
-          <Button variant={"default"} onClick={addTask} className="w-full">
-            Add Task
-          </Button>
-        </div>
-        <ul className="space-y-2 flex-grow">
-          {todos.map((todo) => (
-            <li
-              key={todo.id}
-              className="flex flex-col p-2 bg-background/95 border rounded-md"
-            >
-              {editingId === todo.id ? (
-                <div className="flex flex-col gap-2">
-                  <Input
-                    type="text"
-                    value={editingText}
-                    onChange={(e) => setEditingText(e.target.value)}
-                    className="flex-grow"
-                    autoFocus
-                    placeholder="Task title"
-                  />
-                  <Input
-                    type="text"
-                    value={editingDescription}
-                    onChange={(e) => setEditingDescription(e.target.value)}
-                    className="flex-grow"
-                    placeholder="Task description (optional)"
-                  />
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <Button
-                        variant={"outline"}
-                        className={cn(
-                          "w-full justify-start text-left font-normal",
-                          !editingDate && "text-muted-foreground"
-                        )}
-                      >
-                        <CalendarIcon className="mr-2 h-4 w-4" />
-                        {editingDate ? (
-                          format(editingDate, "PPP")
-                        ) : (
-                          <span>Pick a due date</span>
-                        )}
-                      </Button>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0">
-                      <Calendar
-                        mode="single"
-                        selected={editingDate}
-                        onSelect={setEditingDate}
-                        initialFocus
-                      />
-                    </PopoverContent>
-                  </Popover>
-                  <div className="flex justify-end gap-2">
-                    <Button size="sm" onClick={saveEdit} className="mr-1">
-                      <Check className="h-4 w-4 mr-1" />
-                      Save
-                    </Button>
-                    <Button
-                      size="sm"
-                      onClick={() => {
-                        setEditingId(null);
-                        setEditingText("");
-                        setEditingDescription("");
-                        setEditingDate(undefined);
-                      }}
-                      variant="outline"
-                    >
-                      <X className="h-4 w-4 mr-1" />
-                      Cancel
-                    </Button>
-                  </div>
+      {isLoading ? (
+        <>
+          <div className="space-y-4 m-4">
+            <Skeleton className="h-10 w-full" />
+            <Skeleton className="h-20 w-full" />
+            <div className="flex items-center gap-2">
+              <Skeleton className="h-10 w-10" />
+              <Skeleton className="h-10 flex-1" />
+            </div>
+            <Skeleton className="h-10 w-full" />
+          </div>
+          <div className="space-y-4">
+            {[...Array(4)].map((_, i) => (
+              <div key={i} className="flex items-start gap-4 rounded-lg border p-4">
+                <Skeleton className="h-5 w-5" />
+                <div className="flex-1 space-y-2">
+                  <Skeleton className="h-4 w-3/4" />
+                  <Skeleton className="h-3 w-1/4" />
                 </div>
-              ) : (
-                <>
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center">
-                      <Checkbox
-                        id={`todo-${todo.id}`}
-                        checked={todo.completed ?? false}
-                        onCheckedChange={() => toggleTask(todo.id)}
-                        className="mr-2"
+                <div className="flex items-center gap-2">
+                  <Skeleton className="h-8 w-8" />
+                  <Skeleton className="h-8 w-8" />
+                </div>
+              </div>
+            ))}
+          </div>
+        </>
+      ) : (
+        <>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0">
+            <CardTitle></CardTitle>
+          </CardHeader>
+          <CardContent className="flex flex-col gap-4">
+            <div className="flex flex-col gap-2">
+              <Input
+                type="text"
+                placeholder="Task title"
+                value={newTask}
+                onChange={(e) => setNewTask(e.target.value)}
+                onKeyDown={(e) => e.key === "Enter" && addTask()}
+              />
+              <Input
+                type="text"
+                placeholder="Task description (optional)"
+                value={newTaskDescription}
+                onChange={(e) => setNewTaskDescription(e.target.value)}
+              />
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant={"outline"}
+                    className={cn(
+                      "w-full justify-start text-left font-normal",
+                      !newTaskDate && "text-muted-foreground"
+                    )}
+                  >
+                    <CalendarIcon className="mr-2 h-4 w-4" />
+                    {newTaskDate ? (
+                      format(newTaskDate, "PPP")
+                    ) : (
+                      <span>Pick a due date</span>
+                    )}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0">
+                  <Calendar
+                    mode="single"
+                    selected={newTaskDate}
+                    onSelect={setNewTaskDate}
+                    initialFocus
+                  />
+                </PopoverContent>
+              </Popover>
+              <Button variant={"default"} onClick={addTask} className="w-full">
+                Add Task
+              </Button>
+            </div>
+            <ul className="space-y-2 flex-grow">
+              {todos.map((todo) => (
+                <li
+                  key={todo.id}
+                  className="flex flex-col p-2 bg-background/95 border rounded-md"
+                >
+                  {editingId === todo.id ? (
+                    <div className="flex flex-col gap-2">
+                      <Input
+                        type="text"
+                        value={editingText}
+                        onChange={(e) => setEditingText(e.target.value)}
+                        className="flex-grow"
+                        autoFocus
+                        placeholder="Task title"
                       />
-                      <div className="flex flex-col">
-                        <label
-                          htmlFor={`todo-${todo.id}`}
-                          className={`${
-                            todo.completed ? "line-through text-gray-500" : ""
-                          }`}
+                      <Input
+                        type="text"
+                        value={editingDescription}
+                        onChange={(e) => setEditingDescription(e.target.value)}
+                        className="flex-grow"
+                        placeholder="Task description (optional)"
+                      />
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <Button
+                            variant={"outline"}
+                            className={cn(
+                              "w-full justify-start text-left font-normal",
+                              !editingDate && "text-muted-foreground"
+                            )}
+                          >
+                            <CalendarIcon className="mr-2 h-4 w-4" />
+                            {editingDate ? (
+                              format(editingDate, "PPP")
+                            ) : (
+                              <span>Pick a due date</span>
+                            )}
+                          </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-auto p-0">
+                          <Calendar
+                            mode="single"
+                            selected={editingDate}
+                            onSelect={setEditingDate}
+                            initialFocus
+                          />
+                        </PopoverContent>
+                      </Popover>
+                      <div className="flex justify-end gap-2">
+                        <Button size="sm" onClick={saveEdit} className="mr-1">
+                          <Check className="h-4 w-4 mr-1" />
+                          Save
+                        </Button>
+                        <Button
+                          size="sm"
+                          onClick={() => {
+                            setEditingId(null);
+                            setEditingText("");
+                            setEditingDescription("");
+                            setEditingDate(undefined);
+                          }}
+                          variant="outline"
                         >
-                          {todo.title}
-                        </label>
-                        {todo.description && (
-                          <span className="text-sm text-gray-500">
-                            {todo.description}
-                          </span>
-                        )}
-                        {todo.dueDate && (
-                          <span className="text-sm text-gray-500">
-                            Due: {new Date(todo.dueDate).toLocaleDateString()}
-                          </span>
-                        )}
+                          <X className="h-4 w-4 mr-1" />
+                          Cancel
+                        </Button>
                       </div>
                     </div>
-                    <div>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => {
-                          setEditingId(todo.id);
-                          setEditingText(todo.title);
-                          setEditingDescription(todo.description || "");
-                          setEditingDate(
-                            todo.dueDate ? new Date(todo.dueDate) : undefined
-                          );
-                        }}
-                        className="mr-1"
-                        aria-label="Edit task"
-                      >
-                        <Edit2 className="h-4 w-4" />
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => deleteTask(todo.id)}
-                        aria-label="Delete task"
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  </div>
-                </>
-              )}
-            </li>
-          ))}
-        </ul>
-      </CardContent>
+                  ) : (
+                    <>
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center">
+                          <Checkbox
+                            id={`todo-${todo.id}`}
+                            checked={todo.completed ?? false}
+                            onCheckedChange={() => toggleTask(todo.id)}
+                            className="mr-2"
+                          />
+                          <div className="flex flex-col">
+                            <label
+                              htmlFor={`todo-${todo.id}`}
+                              className={`${
+                                todo.completed ? "line-through text-gray-500" : ""
+                              }`}
+                            >
+                              {todo.title}
+                            </label>
+                            {todo.description && (
+                              <span className="text-sm text-gray-500">
+                                {todo.description}
+                              </span>
+                            )}
+                            {todo.dueDate && (
+                              <span className="text-sm text-gray-500">
+                                Due: {new Date(todo.dueDate).toLocaleDateString()}
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                        <div>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => {
+                              setEditingId(todo.id);
+                              setEditingText(todo.title);
+                              setEditingDescription(todo.description || "");
+                              setEditingDate(
+                                todo.dueDate ? new Date(todo.dueDate) : undefined
+                              );
+                            }}
+                            className="mr-1"
+                            aria-label="Edit task"
+                          >
+                            <Edit2 className="h-4 w-4" />
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => deleteTask(todo.id)}
+                            aria-label="Delete task"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      </div>
+                    </>
+                  )}
+                </li>
+              ))}
+            </ul>
+          </CardContent>
+        </>
+      )}
     </Card>
   );
 }
