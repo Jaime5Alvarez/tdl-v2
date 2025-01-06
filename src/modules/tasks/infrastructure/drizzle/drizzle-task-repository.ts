@@ -12,7 +12,7 @@ export class DrizzleTaskRepository implements TaskRepository {
     const [createdTask] = await this.db.insert(schema.tasks).values({
       title: createTaskDto.title,
       description: createTaskDto.description,
-      dueDate: createTaskDto.dueDate?.toISOString(),
+      dueDate: createTaskDto.dueDate,
       userId: createTaskDto.userId,
     }).returning();
     return createdTask;
@@ -23,7 +23,7 @@ export class DrizzleTaskRepository implements TaskRepository {
       .update(schema.tasks)
       .set({
         ...updateTaskDto,
-        dueDate: updateTaskDto.dueDate?.toISOString(),
+        dueDate: updateTaskDto.dueDate,
       })
       .where(eq(schema.tasks.id, id))
       .returning();
