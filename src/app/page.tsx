@@ -236,7 +236,7 @@ export default function TodoList() {
           {todos.map((todo) => (
             <li
               key={todo.id}
-              className="flex flex-col p-2 bg-muted rounded"
+              className="flex flex-col p-2 bg-background/95 border rounded-md"
             >
               {editingId === todo.id ? (
                 <div className="flex flex-col gap-2">
