@@ -11,6 +11,7 @@ import { createClient } from '@/utils/supabase/client'
 import { CreateTaskDto } from "@/modules/tasks/domain/dto/create-task.dto"
 import { UpdateTaskDto } from "@/modules/tasks/domain/dto/update-task.dto"
 import { ThemeToggle } from "@/components/ui/theme-toggle"
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
 
 const taskService = new TaskService()
 
@@ -180,119 +181,119 @@ export default function TodoList() {
   if (error) return <div>Error: {error}</div>
 
   return (
-    <div className="max-w-md mx-auto mt-10 p-6 bg-background text-foreground rounded-lg shadow-md min-h-[500px] flex flex-col">
-      <div className="flex justify-between items-center mb-4">
-        <h1 className="text-2xl font-bold text-center">Todo List</h1>
+    <Card className="max-w-md mx-auto mt-10 min-h-[500px] flex flex-col">
+      <CardHeader className="flex flex-row items-center justify-between space-y-0">
+        <CardTitle>Todo List</CardTitle>
         <ThemeToggle />
-      </div>
-      <div className="flex flex-col gap-2 mb-4">
-        <Input
-          type="text"
-          placeholder="Task title"
-          value={newTask}
-          onChange={(e) => setNewTask(e.target.value)}
-          onKeyDown={(e) => e.key === "Enter" && addTask()}
-          className="flex-grow"
-        />
-        <Input
-          type="text"
-          placeholder="Task description (optional)"
-          value={newTaskDescription}
-          onChange={(e) => setNewTaskDescription(e.target.value)}
-          className="flex-grow"
-        />
-        <Button onClick={addTask} className="w-full">Add Task</Button>
-      </div>
-      <ul className="space-y-2 flex-grow">
-        {todos.map((todo) => (
-          <li
-            key={todo.id}
-            className="flex flex-col p-2 bg-muted rounded"
-          >
-            {editingId === todo.id ? (
-              <div className="flex flex-col gap-2">
-                <Input
-                  type="text"
-                  value={editingText}
-                  onChange={(e) => setEditingText(e.target.value)}
-                  className="flex-grow"
-                  autoFocus
-                  placeholder="Task title"
-                />
-                <Input
-                  type="text"
-                  value={editingDescription}
-                  onChange={(e) => setEditingDescription(e.target.value)}
-                  className="flex-grow"
-                  placeholder="Task description (optional)"
-                />
-                <div className="flex justify-end gap-2">
-                  <Button size="sm" onClick={saveEdit} className="mr-1">
-                    <Check className="h-4 w-4 mr-1" />
-                    Save
-                  </Button>
-                  <Button size="sm" onClick={() => {
-                    setEditingId(null)
-                    setEditingText("")
-                    setEditingDescription("")
-                  }} variant="outline">
-                    <X className="h-4 w-4 mr-1" />
-                    Cancel
-                  </Button>
+      </CardHeader>
+      <CardContent className="flex flex-col gap-4">
+        <div className="flex flex-col gap-2">
+          <Input
+            type="text"
+            placeholder="Task title"
+            value={newTask}
+            onChange={(e) => setNewTask(e.target.value)}
+            onKeyDown={(e) => e.key === "Enter" && addTask()}
+          />
+          <Input
+            type="text"
+            placeholder="Task description (optional)"
+            value={newTaskDescription}
+            onChange={(e) => setNewTaskDescription(e.target.value)}
+          />
+          <Button onClick={addTask} className="w-full">Add Task</Button>
+        </div>
+        <ul className="space-y-2 flex-grow">
+          {todos.map((todo) => (
+            <li
+              key={todo.id}
+              className="flex flex-col p-2 bg-muted rounded"
+            >
+              {editingId === todo.id ? (
+                <div className="flex flex-col gap-2">
+                  <Input
+                    type="text"
+                    value={editingText}
+                    onChange={(e) => setEditingText(e.target.value)}
+                    className="flex-grow"
+                    autoFocus
+                    placeholder="Task title"
+                  />
+                  <Input
+                    type="text"
+                    value={editingDescription}
+                    onChange={(e) => setEditingDescription(e.target.value)}
+                    className="flex-grow"
+                    placeholder="Task description (optional)"
+                  />
+                  <div className="flex justify-end gap-2">
+                    <Button size="sm" onClick={saveEdit} className="mr-1">
+                      <Check className="h-4 w-4 mr-1" />
+                      Save
+                    </Button>
+                    <Button size="sm" onClick={() => {
+                      setEditingId(null)
+                      setEditingText("")
+                      setEditingDescription("")
+                    }} variant="outline">
+                      <X className="h-4 w-4 mr-1" />
+                      Cancel
+                    </Button>
+                  </div>
                 </div>
-              </div>
-            ) : (
-              <>
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center">
-                    <Checkbox
-                      id={`todo-${todo.id}`}
-                      checked={todo.completed ?? false}
-                      onCheckedChange={() => toggleTask(todo.id)}
-                      className="mr-2"
-                    />
-                    <div className="flex flex-col">
-                      <label
-                        htmlFor={`todo-${todo.id}`}
-                        className={`${
-                          todo.completed ? "line-through text-gray-500" : ""
-                        }`}
+              ) : (
+                <>
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center">
+                      <Checkbox
+                        id={`todo-${todo.id}`}
+                        checked={todo.completed ?? false}
+                        onCheckedChange={() => toggleTask(todo.id)}
+                        className="mr-2"
+                      />
+                      <div className="flex flex-col">
+                        <label
+                          htmlFor={`todo-${todo.id}`}
+                          className={`${
+                            todo.completed ? "line-through text-gray-500" : ""
+                          }`}
+                        >
+                          {todo.title}
+                        </label>
+                        {todo.description && (
+                          <span className="text-sm text-gray-500">
+                            {todo.description}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                    <div>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => setEditingId(todo.id)}
+                        className="mr-1"
+                        aria-label="Edit task"
                       >
-                        {todo.title}
-                      </label>
-                      {todo.description && (
-                        <span className="text-sm text-gray-500">
-                          {todo.description}
-                        </span>
-                      )}
+                        <Edit2 className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => deleteTask(todo.id)}
+                        aria-label="Delete task"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
                     </div>
                   </div>
-                  <div>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => setEditingId(todo.id)}
-                      className="mr-1"
-                      aria-label="Edit task"
-                    >
-                      <Edit2 className="h-4 w-4" />
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => deleteTask(todo.id)}
-                      aria-label="Delete task"
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
-                  </div>
-                </div>
-              </>
-            )}
-          </li>
-        ))}
-      </ul>
-    </div>
+                </>
+              )}
+            </li>
+          ))}
+        </ul>
+      </CardContent>
+    </Card>
   )
 }
 
