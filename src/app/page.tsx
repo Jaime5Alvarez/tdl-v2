@@ -10,6 +10,7 @@ import { Task } from "@/modules/tasks/domain/entities/task"
 import { createClient } from '@/utils/supabase/client'
 import { CreateTaskDto } from "@/modules/tasks/domain/dto/create-task.dto"
 import { UpdateTaskDto } from "@/modules/tasks/domain/dto/update-task.dto"
+import { ThemeToggle } from "@/components/ui/theme-toggle"
 
 const taskService = new TaskService()
 
@@ -179,8 +180,11 @@ export default function TodoList() {
   if (error) return <div>Error: {error}</div>
 
   return (
-    <div className="max-w-md mx-auto mt-10 p-6 bg-white rounded-lg shadow-md min-h-[500px] flex flex-col">
-      <h1 className="text-2xl font-bold mb-4 text-center">Todo List</h1>
+    <div className="max-w-md mx-auto mt-10 p-6 bg-background text-foreground rounded-lg shadow-md min-h-[500px] flex flex-col">
+      <div className="flex justify-between items-center mb-4">
+        <h1 className="text-2xl font-bold text-center">Todo List</h1>
+        <ThemeToggle />
+      </div>
       <div className="flex flex-col gap-2 mb-4">
         <Input
           type="text"
@@ -203,7 +207,7 @@ export default function TodoList() {
         {todos.map((todo) => (
           <li
             key={todo.id}
-            className="flex flex-col p-2 bg-gray-100 rounded"
+            className="flex flex-col p-2 bg-muted rounded"
           >
             {editingId === todo.id ? (
               <div className="flex flex-col gap-2">
