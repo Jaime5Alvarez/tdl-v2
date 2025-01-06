@@ -15,7 +15,7 @@ export class DrizzleTaskRepository implements TaskRepository {
       dueDate: createTaskDto.dueDate?.toISOString(),
       userId: createTaskDto.userId,
     }).returning();
-    return createdTask as Task;
+    return createdTask;
   }
 
   async update(id: string, updateTaskDto: UpdateTaskDto): Promise<Task> {
@@ -27,7 +27,7 @@ export class DrizzleTaskRepository implements TaskRepository {
       })
       .where(eq(schema.tasks.id, id))
       .returning();
-    return updatedTask as Task;
+    return updatedTask;
   }
 
   async delete(id: string): Promise<void> {
@@ -38,7 +38,8 @@ export class DrizzleTaskRepository implements TaskRepository {
     const task = await this.db.query.tasks.findFirst({
       where: eq(schema.tasks.id, id)
     });
-    return task as Task | null;
+    if (!task) return null;
+    return task;
   }
 
   async findByUserId(userId: string): Promise<Task[]> {
