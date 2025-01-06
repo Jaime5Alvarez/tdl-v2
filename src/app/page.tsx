@@ -200,7 +200,7 @@ export default function TodoList() {
             value={newTaskDescription}
             onChange={(e) => setNewTaskDescription(e.target.value)}
           />
-          <Button onClick={addTask} className="w-full">Add Task</Button>
+          <Button variant={"default"} onClick={addTask} className="w-full">Add Task</Button>
         </div>
         <ul className="space-y-2 flex-grow">
           {todos.map((todo) => (
