@@ -110,14 +110,12 @@ export default function TodoList() {
 
         const updateTaskDto = new UpdateTaskDto({
           completed: !task.completed,
+          dueDate: task.dueDate,
+          title: task.title,
+          description: task.description || undefined,
         });
 
         const updatedTask = await taskService.updateTask(id, updateTaskDto);
-
-        // Actualizar con la respuesta real
-        setTodos((prev) =>
-          prev.map((todo) => (todo.id === id ? updatedTask : todo))
-        );
       }
     } catch (error) {
       // Revertir en caso de error
