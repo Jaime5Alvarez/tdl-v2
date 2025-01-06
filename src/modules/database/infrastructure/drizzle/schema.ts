@@ -21,9 +21,9 @@ export const tasks = pgTable("tasks", {
 	title: text().notNull(),
 	description: text(),
 	dueDate: date("due_date"),
-	completed: boolean().default(false),
-	userId: uuid("user_id"),
-	isRecurring: boolean().default(false),
+	completed: boolean().default(false).notNull(),
+	userId: uuid("user_id").notNull(),
+	isRecurring: boolean().default(false).notNull(),
 }, (table) => [
 	foreignKey({
 			columns: [table.userId],

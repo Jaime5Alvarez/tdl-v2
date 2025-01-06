@@ -1,190 +1,198 @@
-"use client"
+"use client";
 
-import { useEffect, useState } from "react"
-import { Input } from "@/components/ui/input"
-import { Button } from "@/components/ui/button"
-import { Checkbox } from "@/components/ui/checkbox"
-import { Trash2, Edit2, X, Check } from 'lucide-react'
-import { TaskService } from "@/services/task-service"
-import { Task } from "@/modules/tasks/domain/entities/task"
-import { createClient } from '@/utils/supabase/client'
-import { CreateTaskDto } from "@/modules/tasks/domain/dto/create-task.dto"
-import { UpdateTaskDto } from "@/modules/tasks/domain/dto/update-task.dto"
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
-import { format } from "date-fns"
-import { Calendar as CalendarIcon } from "lucide-react"
-import { cn } from "@/lib/utils"
-import { Calendar } from "@/components/ui/calendar"
+import { useEffect, useState } from "react";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Trash2, Edit2, X, Check } from "lucide-react";
+import { TaskService } from "@/services/task-service";
+import { Task } from "@/modules/tasks/domain/entities/task";
+import { createClient } from "@/utils/supabase/client";
+import { CreateTaskDto } from "@/modules/tasks/domain/dto/create-task.dto";
+import { UpdateTaskDto } from "@/modules/tasks/domain/dto/update-task.dto";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { format } from "date-fns";
+import { Calendar as CalendarIcon } from "lucide-react";
+import { cn } from "@/lib/utils";
+import { Calendar } from "@/components/ui/calendar";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "@/components/ui/popover"
+} from "@/components/ui/popover";
 
-const taskService = new TaskService()
+const taskService = new TaskService();
 
 export default function TodoList() {
-  const [todos, setTodos] = useState<Task[]>([])
-  const [newTask, setNewTask] = useState("")
-  const [newTaskDescription, setNewTaskDescription] = useState("")
-  const [editingId, setEditingId] = useState<string | null>(null)
-  const [editingText, setEditingText] = useState("")
-  const [editingDescription, setEditingDescription] = useState("")
-  const [isLoading, setIsLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
-  const supabase = createClient()
-  const [newTaskDate, setNewTaskDate] = useState<Date>()
-  const [editingDate, setEditingDate] = useState<Date>()
+  const [todos, setTodos] = useState<Task[]>([]);
+  const [newTask, setNewTask] = useState("");
+  const [newTaskDescription, setNewTaskDescription] = useState("");
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editingText, setEditingText] = useState("");
+  const [editingDescription, setEditingDescription] = useState("");
+  const [isLoading, setIsLoading] = useState(true);
+  const supabase = createClient();
+  const [newTaskDate, setNewTaskDate] = useState<Date>();
+  const [editingDate, setEditingDate] = useState<Date>();
 
   useEffect(() => {
-    loadTasks()
-  }, [])
+    loadTasks();
+  }, []);
 
   const loadTasks = async () => {
     try {
-      const { data: { user } } = await supabase.auth.getUser()
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
       if (user) {
-        const tasks = await taskService.getTasks()
-        setTodos(tasks)
+        const tasks = await taskService.getTasks();
+        setTodos(tasks);
       }
     } catch (error) {
-      setError('Error al cargar las tareas')
-      console.error(error)
+      console.error(error);
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
-
+  };
+  const resetFields = () => {
+    setNewTask("");
+    setNewTaskDescription("");
+    setNewTaskDate(undefined);
+    setEditingId(null);
+    setEditingText("");
+    setEditingDescription("");
+    setEditingDate(undefined);
+  };
+  
   const addTask = async () => {
-    if (newTask.trim() === "") return
-    
-    const tempId = crypto.randomUUID()
+    if (newTask.trim() === "") return;
+
+    const tempId = crypto.randomUUID();
     try {
-      const { data: { user } } = await supabase.auth.getUser()
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
       if (user) {
         const optimisticTask: Task = {
           id: tempId,
           title: newTask,
-          description: newTaskDescription || null,
+          description: newTaskDescription,
+          dueDate: newTaskDate?.toISOString() || null,
+          isRecurring: false,
           userId: user.id,
           completed: false,
           createdAt: new Date().toISOString(),
-          dueDate: newTaskDate?.toISOString() || null,
-          isRecurring: null
-        }
-        
-        setTodos(prev => [...prev, optimisticTask])
-        setNewTask("")
-        setNewTaskDescription("")
-        setNewTaskDate(undefined)
+        };
+
+        setTodos((prev) => [...prev, optimisticTask]);
+        resetFields();
 
         const createTaskDto = new CreateTaskDto({
-          title: newTask,
-          description: newTaskDescription || undefined,
-          userId: user.id,
-          dueDate: newTaskDate,
-        })
-        
-        const actualTask = await taskService.createTask(createTaskDto)
-        setTodos(prev => prev.map(task => 
-          task.id === tempId ? actualTask : task
-        ))
+          title: optimisticTask.title,
+          description: optimisticTask.description || undefined,
+          dueDate: optimisticTask.dueDate,
+          isRecurring: optimisticTask.isRecurring,
+        });
+
+        await taskService.createTask(createTaskDto);
       }
     } catch (error) {
-      setTodos(prev => prev.filter(task => task.id !== tempId))
-      setError('Error al crear la tarea')
-      console.error(error)
+      setTodos((prev) => prev.filter((task) => task.id !== tempId));
+      console.error(error);
     }
-  }
+  };
 
   const toggleTask = async (id: string) => {
     try {
-      const task = todos.find(t => t.id === id)
+      const task = todos.find((t) => t.id === id);
       if (task) {
         // Optimistic update
-        setTodos(prev => prev.map(todo => 
-          todo.id === id ? { ...todo, completed: !todo.completed } : todo
-        ))
+        setTodos((prev) =>
+          prev.map((todo) =>
+            todo.id === id ? { ...todo, completed: !todo.completed } : todo
+          )
+        );
 
         const updateTaskDto = new UpdateTaskDto({
-          completed: !task.completed
-        })
-        
-        const updatedTask = await taskService.updateTask(id, updateTaskDto)
-        
+          completed: !task.completed,
+        });
+
+        const updatedTask = await taskService.updateTask(id, updateTaskDto);
+
         // Actualizar con la respuesta real
-        setTodos(prev => prev.map(todo => 
-          todo.id === id ? updatedTask : todo
-        ))
+        setTodos((prev) =>
+          prev.map((todo) => (todo.id === id ? updatedTask : todo))
+        );
       }
     } catch (error) {
       // Revertir en caso de error
-      setTodos(prev => prev.map(todo =>
-        todo.id === id ? { ...todo, completed: !todo.completed } : todo
-      ))
-      setError('Error al actualizar la tarea')
-      console.error(error)
+      setTodos((prev) =>
+        prev.map((todo) =>
+          todo.id === id ? { ...todo, completed: !todo.completed } : todo
+        )
+      );
+      console.error(error);
     }
-  }
+  };
 
   const deleteTask = async (id: string) => {
     // Declarar la variable antes del try
-    const deletedTask = todos.find(t => t.id === id)
+    const deletedTask = todos.find((t) => t.id === id);
     try {
       // Optimistic update
-      setTodos(prev => prev.filter(todo => todo.id !== id))
-      await taskService.deleteTask(id)
+      setTodos((prev) => prev.filter((todo) => todo.id !== id));
+      await taskService.deleteTask(id);
     } catch (error) {
       // Revertir en caso de error
       if (deletedTask) {
-        setTodos(prev => [...prev, deletedTask])
+        setTodos((prev) => [...prev, deletedTask]);
       }
-      setError('Error al eliminar la tarea')
-      console.error(error)
+      console.error(error);
     }
-  }
+  };
 
   const saveEdit = async () => {
-    if (editingId === null) return
-    
-    const originalTask = todos.find(t => t.id === editingId)
+    if (editingId === null) return;
+
+    const originalTask = todos.find((t) => t.id === editingId);
+    if (!originalTask) return;
+    const optimisticTask: Task = {
+      id: editingId,
+      title: editingText,
+      description: editingDescription,
+      dueDate: editingDate?.toISOString() || null,
+      completed: originalTask.completed,
+      createdAt: originalTask.createdAt,
+      userId: originalTask.userId,
+      isRecurring: originalTask.isRecurring,
+    };
     try {
-      setTodos(prev => prev.map(todo =>
-        todo.id === editingId ? { 
-          ...todo, 
-          title: editingText,
-          description: editingDescription,
-          dueDate: editingDate?.toISOString() || null
-        } : todo
-      ))
-      setEditingId(null)
-      setEditingText("")
-      setEditingDescription("")
-      setEditingDate(undefined)
+      setTodos((prev) =>
+        prev.map((todo) => (todo.id === editingId ? optimisticTask : todo))
+      );
+      resetFields();
 
       const updateTaskDto = new UpdateTaskDto({
-        title: editingText,
-        description: editingDescription || undefined,
-        dueDate: editingDate
-      })
-      
-      const updatedTask = await taskService.updateTask(editingId, updateTaskDto)
-      setTodos(prev => prev.map(todo => 
-        todo.id === editingId ? updatedTask : todo
-      ))
+        title: optimisticTask.title,
+        description: optimisticTask.description || undefined,
+        dueDate: optimisticTask.dueDate,
+      });
+
+      const updatedTask = await taskService.updateTask(
+        editingId,
+        updateTaskDto
+      );
     } catch (error) {
       if (originalTask) {
-        setTodos(prev => prev.map(todo =>
-          todo.id === editingId ? originalTask : todo
-        ))
+        setTodos((prev) =>
+          prev.map((todo) => (todo.id === editingId ? originalTask : todo))
+        );
       }
-      setError('Error al guardar los cambios')
-      console.error(error)
+      console.error(error);
     }
-  }
+  };
 
-  if (isLoading) return <div>Cargando...</div>
-  if (error) return <div>Error: {error}</div>
+  if (isLoading) return <div>Cargando...</div>;
 
   return (
     <Card className="max-w-md mx-auto mt-10 min-h-[500px] flex flex-col bg-card">
@@ -216,7 +224,11 @@ export default function TodoList() {
                 )}
               >
                 <CalendarIcon className="mr-2 h-4 w-4" />
-                {newTaskDate ? format(newTaskDate, "PPP") : <span>Pick a due date</span>}
+                {newTaskDate ? (
+                  format(newTaskDate, "PPP")
+                ) : (
+                  <span>Pick a due date</span>
+                )}
               </Button>
             </PopoverTrigger>
             <PopoverContent className="w-auto p-0">
@@ -265,7 +277,11 @@ export default function TodoList() {
                         )}
                       >
                         <CalendarIcon className="mr-2 h-4 w-4" />
-                        {editingDate ? format(editingDate, "PPP") : <span>Pick a due date</span>}
+                        {editingDate ? (
+                          format(editingDate, "PPP")
+                        ) : (
+                          <span>Pick a due date</span>
+                        )}
                       </Button>
                     </PopoverTrigger>
                     <PopoverContent className="w-auto p-0">
@@ -282,12 +298,16 @@ export default function TodoList() {
                       <Check className="h-4 w-4 mr-1" />
                       Save
                     </Button>
-                    <Button size="sm" onClick={() => {
-                      setEditingId(null)
-                      setEditingText("")
-                      setEditingDescription("")
-                      setEditingDate(undefined)
-                    }} variant="outline">
+                    <Button
+                      size="sm"
+                      onClick={() => {
+                        setEditingId(null);
+                        setEditingText("");
+                        setEditingDescription("");
+                        setEditingDate(undefined);
+                      }}
+                      variant="outline"
+                    >
                       <X className="h-4 w-4 mr-1" />
                       Cancel
                     </Button>
@@ -329,10 +349,12 @@ export default function TodoList() {
                         variant="ghost"
                         size="icon"
                         onClick={() => {
-                          setEditingId(todo.id)
-                          setEditingText(todo.title)
-                          setEditingDescription(todo.description || "")
-                          setEditingDate(todo.dueDate ? new Date(todo.dueDate) : undefined)
+                          setEditingId(todo.id);
+                          setEditingText(todo.title);
+                          setEditingDescription(todo.description || "");
+                          setEditingDate(
+                            todo.dueDate ? new Date(todo.dueDate) : undefined
+                          );
                         }}
                         className="mr-1"
                         aria-label="Edit task"
@@ -356,6 +378,5 @@ export default function TodoList() {
         </ul>
       </CardContent>
     </Card>
-  )
+  );
 }
-

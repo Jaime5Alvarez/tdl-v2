@@ -8,12 +8,12 @@ import { TaskRepository } from '../task-repository';
 export class DrizzleTaskRepository implements TaskRepository {
   constructor(private db: PostgresJsDatabase<typeof schema>) {}
 
-  async create(createTaskDto: CreateTaskDto): Promise<Task> {
+  async create(createTaskDto: CreateTaskDto, userId: string): Promise<Task> {
     const [createdTask] = await this.db.insert(schema.tasks).values({
       title: createTaskDto.title,
       description: createTaskDto.description,
       dueDate: createTaskDto.dueDate,
-      userId: createTaskDto.userId,
+      userId: userId,
     }).returning();
     return createdTask;
   }
