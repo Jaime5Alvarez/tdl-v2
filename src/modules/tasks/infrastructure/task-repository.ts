@@ -7,6 +7,4 @@ export interface TaskRepository {
   delete(id: string): Promise<void>;
   findById(id: string): Promise<Task | null>;
   findByUserId(userId: string): Promise<Task[]>;
-  markAsComplete(id: string): Promise<Task>;
-  markAsIncomplete(id: string): Promise<Task>;
 } 

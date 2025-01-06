@@ -48,12 +48,4 @@ export class DrizzleTaskRepository implements TaskRepository {
     });
     return userTasks;
   }
-
-  async markAsComplete(id: string): Promise<Task> {
-    return this.update(id, { completed: true });
-  }
-
-  async markAsIncomplete(id: string): Promise<Task> {
-    return this.update(id, { completed: false });
-  }
 } 
