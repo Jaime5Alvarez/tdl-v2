@@ -9,7 +9,7 @@ export function Navbar() {
       <div className="container mx-auto flex h-14 items-center justify-between px-4">
         <div className="flex items-center gap-6 md:gap-10">
           <a href="/" className="flex items-center space-x-2">
-            <span className="font-bold"></span>
+            <span className="text-2xl font-bold">Todo List</span>
           </a>
         </div>
         <div className="flex items-center gap-4">

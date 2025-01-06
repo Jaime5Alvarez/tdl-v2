@@ -190,7 +190,7 @@ export default function TodoList() {
   return (
     <Card className="max-w-md mx-auto mt-10 min-h-[500px] flex flex-col bg-card">
       <CardHeader className="flex flex-row items-center justify-between space-y-0">
-        <CardTitle>Todo List</CardTitle>
+        <CardTitle></CardTitle>
       </CardHeader>
       <CardContent className="flex flex-col gap-4">
         <div className="flex flex-col gap-2">
