@@ -43,19 +43,43 @@ export default function TodoList() {
 
   const addTask = async () => {
     if (newTask.trim() === "") return
-
+    
+    // Declarar tempId antes del try
+    const tempId = crypto.randomUUID()
     try {
       const { data: { user } } = await supabase.auth.getUser()
       if (user) {
+        // Optimistic update
+        const optimisticTask: Task = {
+          id: tempId,
+          title: newTask,
+          userId: user.id,
+          completed: false,
+          createdAt: new Date().toISOString(),
+          description: null,
+          dueDate: null,
+          isRecurring: null
+        }
+        
+        setTodos(prev => [...prev, optimisticTask])
+        setNewTask("")
+
+        // Realizar la petición real
         const createTaskDto = new CreateTaskDto({
           title: newTask,
           userId: user.id,
         })
-        const task = await taskService.createTask(createTaskDto)
-        setTodos([...todos, task])
-        setNewTask("")
+        
+        const actualTask = await taskService.createTask(createTaskDto)
+        
+        // Actualizar con la respuesta real
+        setTodos(prev => prev.map(task => 
+          task.id === tempId ? actualTask : task
+        ))
       }
     } catch (error) {
+      // Revertir en caso de error
+      setTodos(prev => prev.filter(task => task.id !== tempId))
       setError('Error al crear la tarea')
       console.error(error)
     }
@@ -65,23 +89,44 @@ export default function TodoList() {
     try {
       const task = todos.find(t => t.id === id)
       if (task) {
+        // Optimistic update
+        setTodos(prev => prev.map(todo => 
+          todo.id === id ? { ...todo, completed: !todo.completed } : todo
+        ))
+
         const updateTaskDto = new UpdateTaskDto({
           completed: !task.completed
         })
+        
         const updatedTask = await taskService.updateTask(id, updateTaskDto)
-        setTodos(todos.map((todo) => todo.id === id ? updatedTask : todo))
+        
+        // Actualizar con la respuesta real
+        setTodos(prev => prev.map(todo => 
+          todo.id === id ? updatedTask : todo
+        ))
       }
     } catch (error) {
+      // Revertir en caso de error
+      setTodos(prev => prev.map(todo =>
+        todo.id === id ? { ...todo, completed: !todo.completed } : todo
+      ))
       setError('Error al actualizar la tarea')
       console.error(error)
     }
   }
 
   const deleteTask = async (id: string) => {
+    // Declarar la variable antes del try
+    const deletedTask = todos.find(t => t.id === id)
     try {
+      // Optimistic update
+      setTodos(prev => prev.filter(todo => todo.id !== id))
       await taskService.deleteTask(id)
-      setTodos(todos.filter((todo) => todo.id !== id))
     } catch (error) {
+      // Revertir en caso de error
+      if (deletedTask) {
+        setTodos(prev => [...prev, deletedTask])
+      }
       setError('Error al eliminar la tarea')
       console.error(error)
     }
@@ -89,16 +134,34 @@ export default function TodoList() {
 
   const saveEdit = async () => {
     if (editingId === null) return
-
+    
+    // Declarar originalTask antes del try
+    const originalTask = todos.find(t => t.id === editingId)
     try {
+      // Optimistic update
+      setTodos(prev => prev.map(todo =>
+        todo.id === editingId ? { ...todo, title: editingText } : todo
+      ))
+      setEditingId(null)
+      setEditingText("")
+
       const updateTaskDto = new UpdateTaskDto({
         title: editingText
       })
+      
       const updatedTask = await taskService.updateTask(editingId, updateTaskDto)
-      setTodos(todos.map((todo) => todo.id === editingId ? updatedTask : todo))
-      setEditingId(null)
-      setEditingText("")
+      
+      // Actualizar con la respuesta real
+      setTodos(prev => prev.map(todo => 
+        todo.id === editingId ? updatedTask : todo
+      ))
     } catch (error) {
+      // Revertir en caso de error
+      if (originalTask) {
+        setTodos(prev => prev.map(todo =>
+          todo.id === editingId ? originalTask : todo
+        ))
+      }
       setError('Error al guardar los cambios')
       console.error(error)
     }
