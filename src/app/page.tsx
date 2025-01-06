@@ -25,6 +25,8 @@ export default function TodoList() {
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const supabase = createClient()
+  const [newTaskDueDate, setNewTaskDueDate] = useState<string>("")
+  const [editingDueDate, setEditingDueDate] = useState<string>("")
 
   useEffect(() => {
     loadTasks()
@@ -60,19 +62,21 @@ export default function TodoList() {
           userId: user.id,
           completed: false,
           createdAt: new Date().toISOString(),
-          dueDate: null,
+          dueDate: newTaskDueDate ? new Date(newTaskDueDate).toISOString() : null,
           isRecurring: null
         }
         
         setTodos(prev => [...prev, optimisticTask])
         setNewTask("")
         setNewTaskDescription("")
+        setNewTaskDueDate("")
 
         // Realizar la petición real
         const createTaskDto = new CreateTaskDto({
           title: newTask,
           description: newTaskDescription || undefined,
           userId: user.id,
+          dueDate: newTaskDueDate ? new Date(newTaskDueDate) : undefined,
         })
         
         const actualTask = await taskService.createTask(createTaskDto)
@@ -147,16 +151,19 @@ export default function TodoList() {
         todo.id === editingId ? { 
           ...todo, 
           title: editingText,
-          description: editingDescription 
+          description: editingDescription,
+          dueDate: editingDueDate ? new Date(editingDueDate).toISOString() : null
         } : todo
       ))
       setEditingId(null)
       setEditingText("")
       setEditingDescription("")
+      setEditingDueDate("")
 
       const updateTaskDto = new UpdateTaskDto({
         title: editingText,
-        description: editingDescription || undefined
+        description: editingDescription || undefined,
+        dueDate: editingDueDate ? new Date(editingDueDate) : undefined
       })
       
       const updatedTask = await taskService.updateTask(editingId, updateTaskDto)
@@ -200,6 +207,11 @@ export default function TodoList() {
             value={newTaskDescription}
             onChange={(e) => setNewTaskDescription(e.target.value)}
           />
+          <Input
+            type="date"
+            value={newTaskDueDate}
+            onChange={(e) => setNewTaskDueDate(e.target.value)}
+          />
           <Button variant={"default"} onClick={addTask} className="w-full">Add Task</Button>
         </div>
         <ul className="space-y-2 flex-grow">
@@ -225,6 +237,12 @@ export default function TodoList() {
                     className="flex-grow"
                     placeholder="Task description (optional)"
                   />
+                  <Input
+                    type="date"
+                    value={editingDueDate}
+                    onChange={(e) => setEditingDueDate(e.target.value)}
+                    className="flex-grow"
+                  />
                   <div className="flex justify-end gap-2">
                     <Button size="sm" onClick={saveEdit} className="mr-1">
                       <Check className="h-4 w-4 mr-1" />
@@ -234,6 +252,7 @@ export default function TodoList() {
                       setEditingId(null)
                       setEditingText("")
                       setEditingDescription("")
+                      setEditingDueDate("")
                     }} variant="outline">
                       <X className="h-4 w-4 mr-1" />
                       Cancel
@@ -264,13 +283,23 @@ export default function TodoList() {
                             {todo.description}
                           </span>
                         )}
+                        {todo.dueDate && (
+                          <span className="text-sm text-gray-500">
+                            Due: {new Date(todo.dueDate).toLocaleDateString()}
+                          </span>
+                        )}
                       </div>
                     </div>
                     <div>
                       <Button
                         variant="ghost"
                         size="icon"
-                        onClick={() => setEditingId(todo.id)}
+                        onClick={() => {
+                          setEditingId(todo.id)
+                          setEditingText(todo.title)
+                          setEditingDescription(todo.description || "")
+                          setEditingDueDate(todo.dueDate ? new Date(todo.dueDate).toISOString().split('T')[0] : "")
+                        }}
                         className="mr-1"
                         aria-label="Edit task"
                       >
