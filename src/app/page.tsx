@@ -10,7 +10,6 @@ import { Task } from "@/modules/tasks/domain/entities/task"
 import { createClient } from '@/utils/supabase/client'
 import { CreateTaskDto } from "@/modules/tasks/domain/dto/create-task.dto"
 import { UpdateTaskDto } from "@/modules/tasks/domain/dto/update-task.dto"
-import { ThemeToggle } from "@/components/ui/theme-toggle"
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
 import { format } from "date-fns"
 import { Calendar as CalendarIcon } from "lucide-react"
