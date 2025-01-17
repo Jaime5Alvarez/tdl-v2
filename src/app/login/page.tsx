@@ -1,6 +1,6 @@
 import { login, signup } from "@/app/login/actions";
 import GoogleOneTap from "@/app/components/auth/google-one-tap";
-
+import MicrosoftOneTap from "@/app/components/auth/microsoft-one-tap";
 export default async function LoginPage() {
 
 
@@ -14,6 +14,7 @@ export default async function LoginPage() {
       <button formAction={login}>Log in</button>
       <button formAction={signup}>Sign up</button>
       <GoogleOneTap />
+      <MicrosoftOneTap />
 
     </form>
     </>

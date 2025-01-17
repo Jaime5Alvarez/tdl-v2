@@ -28,6 +28,8 @@ export default async function RootLayout({
 }>) {
   const supabase = await createClient()
   const { data } = await supabase.auth.getUser();
+  const accessToken = (await supabase.auth.getSession()).data.session?.access_token
+
   
   const user = data?.user ? {
     id: data.user.id,
