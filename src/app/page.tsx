@@ -48,6 +48,7 @@ export default function TodoList() {
       const user = useUserStore.getState().user;
       if (user) {
         const tasks = await taskService.getTasksByDate(date);
+        setNewTaskDate(date);
         setTodos(tasks);
       }
     } catch (error) {
@@ -59,7 +60,7 @@ export default function TodoList() {
   const resetFields = () => {
     setNewTask("");
     setNewTaskDescription("");
-    setNewTaskDate(undefined);
+    setNewTaskDate(new Date());
     setEditingId(null);
     setEditingText("");
     setEditingDescription("");
