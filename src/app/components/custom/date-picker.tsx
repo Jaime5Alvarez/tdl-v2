@@ -1,8 +1,8 @@
 "use client"
 
 import * as React from "react"
-import { format } from "date-fns"
 import { ChevronLeft, ChevronRight } from "lucide-react"
+import { format, addDays, subDays } from "date-fns"
 
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
@@ -18,14 +18,25 @@ export default function DatePicker({
 }) {
     const [open, setOpen] = React.useState(false)
 
+    const handlePreviousDay = () => {
+        setDate((prev: Date) => subDays(prev, 1))
+    }
+
+    const handleNextDay = () => {
+        setDate((prev: Date) => addDays(prev, 1))
+    }
+
     return (
-        <div className="flex flex-col items-center p-4">
+        <div className="flex items-center justify-center p-4 gap-1">
+            <Button variant="ghost" size="icon" className="text-white" onClick={handlePreviousDay}>
+                <ChevronLeft className="h-6 w-6" />
+            </Button>
             <Popover open={open} onOpenChange={setOpen}>
                 <PopoverTrigger asChild>
                     <Button
                         variant="outline"
                         className={cn(
-                            "w-[280px] justify-center text-center font-normal hover:bg-primary hover:text-primary-foreground",
+                            "w-[280px] justify-center text-center font-normal",
                             !date && "text-muted-foreground",
                         )}
                     >
@@ -86,6 +97,10 @@ export default function DatePicker({
                     />
                 </PopoverContent>
             </Popover>
+
+            <Button variant="ghost" size="icon" className="text-white" onClick={handleNextDay}>
+                <ChevronRight className="h-6 w-6" />
+            </Button>
         </div>
     )
 }

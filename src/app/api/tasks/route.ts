@@ -1,15 +1,24 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { TaskRepositoryFactory } from '@/modules/tasks/infrastructure/task-repository.factory'
 import { CreateTaskUseCase } from '@/modules/tasks/application/create-task.use-case'
-import { FindTasksByUserIdUseCase } from '@/modules/tasks/application/find-tasks-by-user-id.use-case'
+import { FindTasksByUserIdAndDateUseCase } from '@/modules/tasks/application/find-tasks-by-user-id.use-case'
 import { createClient } from "@/utils/supabase/server";
 import { CreateTaskDto } from '@/modules/tasks/domain/dto/create-task.dto';
 
 const taskRepository = TaskRepositoryFactory()
 const createTaskUseCase = new CreateTaskUseCase(taskRepository)
-const findTasksByUserIdUseCase = new FindTasksByUserIdUseCase(taskRepository)
+const findTasksByUserIdAndDateUseCase = new FindTasksByUserIdAndDateUseCase(taskRepository)
 
 export async function GET(request: NextRequest) {
+  const searchParams = request.nextUrl.searchParams
+  const date = searchParams.get('date')
+
+  if (!date) {
+    return NextResponse.json({
+      message: "field date was not provided",
+    }, { status: 400 })
+  }
+
   const supabase = await createClient()
 
   const { data, error } = await supabase.auth.getUser();
@@ -17,7 +26,7 @@ export async function GET(request: NextRequest) {
   if (!data.user) {
     return NextResponse.json({ error: 'User not found' }, { status: 404 })
   }
-  const tasks = await findTasksByUserIdUseCase.execute(data.user.id)
+  const tasks = await findTasksByUserIdAndDateUseCase.execute(data.user.id, new Date(date))
   return NextResponse.json(tasks)
 }
 
