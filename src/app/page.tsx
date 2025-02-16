@@ -1,5 +1,4 @@
 "use client";
-import { SimpleProvider, Providers, ProviderState } from "@microsoft/mgt-element";
 import { useEffect, useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -76,7 +75,6 @@ export default function TodoList() {
           title: newTask,
           description: newTaskDescription,
           dueDate: newTaskDate?.toISOString() || null,
-          isRecurring: false,
           userId: user.id,
           completed: false,
           createdAt: new Date().toISOString(),
@@ -89,7 +87,6 @@ export default function TodoList() {
           title: optimisticTask.title,
           description: optimisticTask.description || undefined,
           dueDate: optimisticTask.dueDate,
-          isRecurring: optimisticTask.isRecurring,
         });
 
         await taskService.createTask(createTaskDto);
@@ -160,7 +157,6 @@ export default function TodoList() {
       completed: originalTask.completed,
       createdAt: originalTask.createdAt,
       userId: originalTask.userId,
-      isRecurring: originalTask.isRecurring,
     };
     try {
       setTodos((prev) =>
