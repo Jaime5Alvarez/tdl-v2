@@ -6,7 +6,7 @@ import { UpdateTaskDto } from '../../domain/dto/update-task.dto';
 import { Task } from '../../domain/entities/task';
 import { TaskRepository } from '../task-repository';
 export class DrizzleTaskRepository implements TaskRepository {
-  constructor(private db: PostgresJsDatabase<typeof schema>) {}
+  constructor(private db: PostgresJsDatabase<typeof schema>) { }
 
   async create(createTaskDto: CreateTaskDto, userId: string): Promise<Task> {
     const [createdTask] = await this.db.insert(schema.tasks).values({
