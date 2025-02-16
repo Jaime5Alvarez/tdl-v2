@@ -1,4 +1,4 @@
-import { pgTable, foreignKey, uuid, text, timestamp, date, boolean } from "drizzle-orm/pg-core"
+import { pgTable, foreignKey, uuid, text, timestamp, boolean } from "drizzle-orm/pg-core"
 import { sql } from "drizzle-orm"
 
 
@@ -20,7 +20,7 @@ export const tasks = pgTable("tasks", {
 	createdAt: timestamp("created_at", { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
 	title: text().notNull(),
 	description: text(),
-	dueDate: date("due_date"),
+	date: timestamp({ withTimezone: true, mode: 'string' }).defaultNow().notNull(),
 	completed: boolean().default(false).notNull(),
 	userId: uuid("user_id").notNull(),
 }, (table) => [

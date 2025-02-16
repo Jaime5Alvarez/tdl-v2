@@ -65,6 +65,7 @@ export default function TodoList() {
 
   const addTask = async () => {
     if (newTask.trim() === "") return;
+    if (!newTaskDate) return;
 
     const tempId = crypto.randomUUID();
     try {
@@ -74,7 +75,7 @@ export default function TodoList() {
           id: tempId,
           title: newTask,
           description: newTaskDescription,
-          dueDate: newTaskDate?.toISOString() || null,
+          date: newTaskDate.toISOString(),
           userId: user.id,
           completed: false,
           createdAt: new Date().toISOString(),
@@ -86,7 +87,7 @@ export default function TodoList() {
         const createTaskDto = new CreateTaskDto({
           title: optimisticTask.title,
           description: optimisticTask.description || undefined,
-          dueDate: optimisticTask.dueDate,
+          date: optimisticTask.date,
         });
 
         await taskService.createTask(createTaskDto);
@@ -110,7 +111,7 @@ export default function TodoList() {
 
         const updateTaskDto = new UpdateTaskDto({
           completed: !task.completed,
-          dueDate: task.dueDate,
+          date: task.date,
           title: task.title,
           description: task.description || undefined,
         });
@@ -149,11 +150,12 @@ export default function TodoList() {
 
     const originalTask = todos.find((t) => t.id === editingId);
     if (!originalTask) return;
+    if (!editingDate) return;
     const optimisticTask: Task = {
       id: editingId,
       title: editingText,
       description: editingDescription,
-      dueDate: editingDate?.toISOString() || null,
+      date: editingDate.toISOString(),
       completed: originalTask.completed,
       createdAt: originalTask.createdAt,
       userId: originalTask.userId,
@@ -167,7 +169,8 @@ export default function TodoList() {
       const updateTaskDto = new UpdateTaskDto({
         title: optimisticTask.title,
         description: optimisticTask.description || undefined,
-        dueDate: optimisticTask.dueDate,
+        date: optimisticTask.date,
+        completed: optimisticTask.completed,
       });
 
       const updatedTask = await taskService.updateTask(
@@ -249,7 +252,7 @@ export default function TodoList() {
                     {newTaskDate ? (
                       format(newTaskDate, "PPP")
                     ) : (
-                      <span>Pick a due date</span>
+                      <span>Pick a date</span>
                     )}
                   </Button>
                 </PopoverTrigger>
@@ -302,7 +305,7 @@ export default function TodoList() {
                             {editingDate ? (
                               format(editingDate, "PPP")
                             ) : (
-                              <span>Pick a due date</span>
+                              <span>Pick a date</span>
                             )}
                           </Button>
                         </PopoverTrigger>
@@ -361,10 +364,10 @@ export default function TodoList() {
                                 {todo.description}
                               </span>
                             )}
-                            {todo.dueDate && (
+                            {todo.date && (
                               <span className="text-sm text-gray-500">
-                                Due:{" "}
-                                {new Date(todo.dueDate).toLocaleDateString()}
+                                Date:{" "}
+                                {new Date(todo.date).toLocaleDateString()}
                               </span>
                             )}
                           </div>
@@ -378,8 +381,8 @@ export default function TodoList() {
                               setEditingText(todo.title);
                               setEditingDescription(todo.description || "");
                               setEditingDate(
-                                todo.dueDate
-                                  ? new Date(todo.dueDate)
+                                todo.date
+                                  ? new Date(todo.date)
                                   : undefined
                               );
                             }}

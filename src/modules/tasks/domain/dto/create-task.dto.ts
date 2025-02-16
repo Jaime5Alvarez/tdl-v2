@@ -1,14 +1,14 @@
 export class CreateTaskDto {
   title: string;
   description?: string;
-  dueDate?: string | null;
+  date: string;
   constructor(data: {
     title: string;
     description?: string;
-    dueDate?: Date | string | null;
+    date: string;
   }) {
     this.title = data.title;
     this.description = data.description;
-    this.dueDate = data.dueDate ? new Date(data.dueDate).toISOString() : null;
+    this.date = new Date(data.date).toISOString();
   }
 }

@@ -1,18 +1,17 @@
 export class UpdateTaskDto {
-  title?: string;
+  title: string;
   description?: string;
-  dueDate?: string | null;
-  completed?: boolean;
-
-  constructor(data: Partial<{
+  date: string;
+  completed: boolean;
+  constructor(data: {
     title: string;
-    description: string;
-    dueDate: Date | string | null;
+    description?: string;
+    date: string;
     completed: boolean;
-  }>) {
+  }) {
     this.title = data.title;
     this.description = data.description;
-    this.dueDate = data.dueDate ? new Date(data.dueDate).toISOString() : null;
+    this.date = new Date(data.date).toISOString();
     this.completed = data.completed;
   }
-} 
+}
