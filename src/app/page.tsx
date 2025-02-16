@@ -20,6 +20,7 @@ import {
 } from "@/components/ui/popover";
 import { useUserStore } from "@/store/user-store";
 import { Skeleton } from "@/components/ui/skeleton";
+import DatePicker from "./components/custom/date-picker";
 
 export default function TodoList() {
   const taskService = new TaskService();
@@ -32,19 +33,21 @@ export default function TodoList() {
   const [isLoading, setIsLoading] = useState(true);
   const [newTaskDate, setNewTaskDate] = useState<Date>();
   const [editingDate, setEditingDate] = useState<Date>();
+  const [date, setDate] = useState(new Date());
 
 
   useEffect(() => {
-    loadTasks();
-  }, []);
-  
-  
+    loadTasksByDate();
+  }, [date]);
 
-  const loadTasks = async () => {
+
+
+  const loadTasksByDate = async () => {
+    setIsLoading(true);
     try {
       const user = useUserStore.getState().user;
       if (user) {
-        const tasks = await taskService.getTasks();
+        const tasks = await taskService.getTasksByDate(date);
         setTodos(tasks);
       }
     } catch (error) {
@@ -191,6 +194,9 @@ export default function TodoList() {
 
   return (
     <Card className="max-w-md mx-auto mt-10 min-h-[500px] flex flex-col bg-card">
+      <CardHeader className="flex flex-row items-center justify-between space-y-0">
+        <CardTitle className="flex justify-center w-full"><DatePicker date={date} setDate={setDate} /></CardTitle>
+      </CardHeader>
       {isLoading ? (
         <>
           <div className="space-y-4 m-4">
@@ -223,9 +229,6 @@ export default function TodoList() {
         </>
       ) : (
         <>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0">
-            <CardTitle></CardTitle>
-          </CardHeader>
           <CardContent className="flex flex-col gap-4">
             <div className="flex flex-col gap-2">
               <Input
@@ -353,11 +356,10 @@ export default function TodoList() {
                           <div className="flex flex-col">
                             <label
                               htmlFor={`todo-${todo.id}`}
-                              className={`${
-                                todo.completed
-                                  ? "line-through text-gray-500"
-                                  : ""
-                              }`}
+                              className={`${todo.completed
+                                ? "line-through text-gray-500"
+                                : ""
+                                }`}
                             >
                               {todo.title}
                             </label>

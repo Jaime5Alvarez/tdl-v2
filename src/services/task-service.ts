@@ -47,8 +47,8 @@ export class TaskService {
     }
   }
 
-  async getTasks(): Promise<Task[]> {
-    const response = await fetch(`${this.baseUrl}`);
+  async getTasksByDate(date: Date): Promise<Task[]> {
+    const response = await fetch(`${this.baseUrl}?date=${date}`);
 
     if (!response.ok) {
       throw new Error('Error al obtener las tareas');
