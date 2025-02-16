@@ -45,7 +45,7 @@ export default async function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <UserProvider user={user} />
+          <UserProvider user={user} accessToken={accessToken} />
           {data?.user && <Navbar />}
           <main className="container mx-auto">
             {children}

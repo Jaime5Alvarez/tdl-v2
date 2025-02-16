@@ -1,5 +1,5 @@
 "use client";
-
+import { SimpleProvider, Providers, ProviderState } from "@microsoft/mgt-element";
 import { useEffect, useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -22,9 +22,8 @@ import {
 import { useUserStore } from "@/store/user-store";
 import { Skeleton } from "@/components/ui/skeleton";
 
-const taskService = new TaskService();
-
 export default function TodoList() {
+  const taskService = new TaskService();
   const [todos, setTodos] = useState<Task[]>([]);
   const [newTask, setNewTask] = useState("");
   const [newTaskDescription, setNewTaskDescription] = useState("");
@@ -35,9 +34,12 @@ export default function TodoList() {
   const [newTaskDate, setNewTaskDate] = useState<Date>();
   const [editingDate, setEditingDate] = useState<Date>();
 
+
   useEffect(() => {
     loadTasks();
   }, []);
+  
+  
 
   const loadTasks = async () => {
     try {
@@ -186,7 +188,6 @@ export default function TodoList() {
     }
   };
 
-
   return (
     <Card className="max-w-md mx-auto mt-10 min-h-[500px] flex flex-col bg-card">
       {isLoading ? (
@@ -202,7 +203,10 @@ export default function TodoList() {
           </div>
           <div className="space-y-4">
             {[...Array(4)].map((_, i) => (
-              <div key={i} className="flex items-start gap-4 rounded-lg border p-4">
+              <div
+                key={i}
+                className="flex items-start gap-4 rounded-lg border p-4"
+              >
                 <Skeleton className="h-5 w-5" />
                 <div className="flex-1 space-y-2">
                   <Skeleton className="h-4 w-3/4" />
@@ -349,7 +353,9 @@ export default function TodoList() {
                             <label
                               htmlFor={`todo-${todo.id}`}
                               className={`${
-                                todo.completed ? "line-through text-gray-500" : ""
+                                todo.completed
+                                  ? "line-through text-gray-500"
+                                  : ""
                               }`}
                             >
                               {todo.title}
@@ -361,7 +367,8 @@ export default function TodoList() {
                             )}
                             {todo.dueDate && (
                               <span className="text-sm text-gray-500">
-                                Due: {new Date(todo.dueDate).toLocaleDateString()}
+                                Due:{" "}
+                                {new Date(todo.dueDate).toLocaleDateString()}
                               </span>
                             )}
                           </div>
@@ -375,7 +382,9 @@ export default function TodoList() {
                               setEditingText(todo.title);
                               setEditingDescription(todo.description || "");
                               setEditingDate(
-                                todo.dueDate ? new Date(todo.dueDate) : undefined
+                                todo.dueDate
+                                  ? new Date(todo.dueDate)
+                                  : undefined
                               );
                             }}
                             className="mr-1"
