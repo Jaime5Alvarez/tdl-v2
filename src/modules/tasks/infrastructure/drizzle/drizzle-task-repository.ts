@@ -10,6 +10,7 @@ export class DrizzleTaskRepository implements TaskRepository {
 
   async create(createTaskDto: CreateTaskDto, userId: string): Promise<Task> {
     const [createdTask] = await this.db.insert(schema.tasks).values({
+      id: createTaskDto.id,
       title: createTaskDto.title,
       description: createTaskDto.description,
       date: createTaskDto.date,

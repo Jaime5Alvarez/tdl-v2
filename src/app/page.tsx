@@ -9,7 +9,7 @@ import { Task } from "@/modules/tasks/domain/entities/task";
 import { CreateTaskDto } from "@/modules/tasks/domain/dto/create-task.dto";
 import { UpdateTaskDto } from "@/modules/tasks/domain/dto/update-task.dto";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import { format } from "date-fns";
+import { format, set } from "date-fns";
 import { Calendar as CalendarIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Calendar } from "@/components/ui/calendar";
@@ -67,12 +67,12 @@ export default function TodoList() {
     if (newTask.trim() === "") return;
     if (!newTaskDate) return;
 
-    const tempId = crypto.randomUUID();
+    const newId = crypto.randomUUID();
     try {
       const user = useUserStore.getState().user;
       if (user) {
         const optimisticTask: Task = {
-          id: tempId,
+          id: newId,
           title: newTask,
           description: newTaskDescription,
           date: newTaskDate.toISOString(),
@@ -85,15 +85,17 @@ export default function TodoList() {
         resetFields();
 
         const createTaskDto = new CreateTaskDto({
+          id: newId,
           title: optimisticTask.title,
           description: optimisticTask.description || undefined,
           date: optimisticTask.date,
         });
 
-        await taskService.createTask(createTaskDto);
+        const task = await taskService.createTask(createTaskDto);
+
       }
     } catch (error) {
-      setTodos((prev) => prev.filter((task) => task.id !== tempId));
+      setTodos((prev) => prev.filter((task) => task.id !== newId));
       console.error(error);
     }
   };
@@ -362,12 +364,6 @@ export default function TodoList() {
                             {todo.description && (
                               <span className="text-sm text-gray-500">
                                 {todo.description}
-                              </span>
-                            )}
-                            {todo.date && (
-                              <span className="text-sm text-gray-500">
-                                Date:{" "}
-                                {new Date(todo.date).toLocaleDateString()}
                               </span>
                             )}
                           </div>
