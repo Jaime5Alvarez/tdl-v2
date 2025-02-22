@@ -4,6 +4,7 @@ const requiredEnvVars = [
   "PORT",
   "NODE_ENV",
   "DATABASE_URL",
+  "USER_ID_TESTING"
 ] as const;
 
 const optionalEnvVars = [
@@ -32,11 +33,13 @@ function getOptionalEnvVar(key: typeof optionalEnvVars[number]): string | undefi
 export const {
 PORT,
 NODE_ENV,
-DATABASE_URL
+DATABASE_URL,
+USER_ID_TESTING
 } = {
 PORT: getRequiredEnvVar('PORT'),
 NODE_ENV: getRequiredEnvVar('NODE_ENV'),
-DATABASE_URL: getRequiredEnvVar('DATABASE_URL')
+DATABASE_URL: getRequiredEnvVar('DATABASE_URL'),
+USER_ID_TESTING: getRequiredEnvVar('USER_ID_TESTING')
 } as const;
 
 export const isDebug = (): boolean => {
