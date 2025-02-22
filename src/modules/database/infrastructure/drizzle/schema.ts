@@ -30,3 +30,15 @@ export const tasks = pgTable("tasks", {
 			name: "tasks_user_id_fkey"
 		}).onUpdate("cascade").onDelete("cascade"),
 ]);
+
+export const recurrenceTasks = pgTable("recurrence_tasks", {
+	createdAt: timestamp("created_at", { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
+	taskId: uuid("task_id").primaryKey().notNull(),
+	recurrenceRule: text("recurrence_rule").notNull(),
+}, (table) => [
+	foreignKey({
+			columns: [table.taskId],
+			foreignColumns: [tasks.id],
+			name: "recurrence table_task_id_fkey"
+		}).onDelete("cascade"),
+]);
