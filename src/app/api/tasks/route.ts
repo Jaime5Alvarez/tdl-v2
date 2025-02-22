@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { TaskRepositoryFactory } from '@/modules/tasks/infrastructure/task-repository.factory'
-import { CreateTaskUseCase } from '@/modules/tasks/application/create-task.use-case'
-import { FindTasksByUserIdAndDateUseCase } from '@/modules/tasks/application/find-tasks-by-user-id-and-date.use-case'
-import { createClient } from "@/utils/supabase/server";
-import { CreateTaskDto } from '@/modules/tasks/domain/dto/create-task.dto';
+import { TaskRepositoryFactory } from 'src/modules/tasks/infrastructure/task-repository.factory'
+import { CreateTaskUseCase } from 'src/modules/tasks/application/create-task.use-case'
+import { FindTasksByUserIdAndDateUseCase } from 'src/modules/tasks/application/find-tasks-by-user-id-and-date.use-case'
+import { createClient } from "src/utils/supabase/server";
+import { CreateTaskDto } from 'src/modules/tasks/domain/dto/create-task.dto';
 
 const taskRepository = TaskRepositoryFactory()
 const createTaskUseCase = new CreateTaskUseCase(taskRepository)

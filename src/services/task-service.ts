@@ -1,6 +1,6 @@
-import { CreateTaskDto } from "@/modules/tasks/domain/dto/create-task.dto";
-import { UpdateTaskDto } from "@/modules/tasks/domain/dto/update-task.dto";
-import { Task } from "@/modules/tasks/domain/entities/task";
+import { CreateTaskDto } from "src/modules/tasks/domain/dto/create-task.dto";
+import { UpdateTaskDto } from "src/modules/tasks/domain/dto/update-task.dto";
+import { Task } from "src/modules/tasks/domain/entities/task";
 
 export class TaskService {
   private baseUrl = '/api/tasks';

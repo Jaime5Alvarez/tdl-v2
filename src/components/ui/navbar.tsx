@@ -1,7 +1,7 @@
 import { LogOut } from "lucide-react"
 import { Button } from "./button"
 import { ThemeToggle } from "./theme-toggle"
-import { logout } from "@/app/login/actions"
+import { logout } from "src/app/login/actions"
 
 export function Navbar() {
   return (

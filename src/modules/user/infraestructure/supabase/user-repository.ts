@@ -1,5 +1,5 @@
 import { UserRepository } from "../user-repository";
-import { User } from "@/modules/user/domain/interface";
+import { User } from "src/modules/user/domain/interface";
 import { SupabaseClient } from "@supabase/supabase-js";
 
 export class SupabaseUserRepository implements UserRepository {

@@ -1,5 +1,5 @@
 "use client"
-import { createClient } from '@/utils/supabase/client'
+import { createClient } from 'src/utils/supabase/client'
 import * as React from "react";
 const MicrosoftOneTap = (props: React.SVGProps<SVGSVGElement>) => {
   const supabase = createClient();

@@ -4,10 +4,10 @@ import * as React from "react"
 import { ChevronLeft, ChevronRight } from "lucide-react"
 import { format, addDays, subDays } from "date-fns"
 
-import { cn } from "@/lib/utils"
-import { Button } from "@/components/ui/button"
-import { Calendar } from "@/components/ui/calendar"
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
+import { cn } from "src/lib/utils"
+import { Button } from "src/components/ui/button"
+import { Calendar } from "src/components/ui/calendar"
+import { Popover, PopoverContent, PopoverTrigger } from "src/components/ui/popover"
 
 export default function DatePicker({
     date,

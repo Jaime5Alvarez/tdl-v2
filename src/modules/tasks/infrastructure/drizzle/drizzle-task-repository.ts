@@ -1,6 +1,6 @@
 import { desc, eq, and } from 'drizzle-orm';
 import { PostgresJsDatabase } from 'drizzle-orm/postgres-js';
-import * as schema from '@/modules/database/infrastructure/drizzle/schema';
+import * as schema from 'src/modules/database/infrastructure/drizzle/schema';
 import { CreateTaskDto } from '../../domain/dto/create-task.dto';
 import { UpdateTaskDto } from '../../domain/dto/update-task.dto';
 import { Task } from '../../domain/entities/task';

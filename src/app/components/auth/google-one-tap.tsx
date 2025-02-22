@@ -1,7 +1,7 @@
 'use client'
 
 import Script from 'next/script'
-import { createClient } from '@/utils/supabase/client'
+import { createClient } from 'src/utils/supabase/client'
 import { CredentialResponse } from 'google-one-tap'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'

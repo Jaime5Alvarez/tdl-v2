@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import { createClient } from "@/utils/supabase/server";
-import { ThemeProvider } from "@/components/theme-provider"
-import { Navbar } from "@/components/ui/navbar";
-import { UserProvider } from "@/components/user-provider";
+import { createClient } from "src/utils/supabase/server";
+import { ThemeProvider } from "src/components/theme-provider"
+import { Navbar } from "src/components/ui/navbar";
+import { UserProvider } from "src/components/user-provider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -45,7 +45,7 @@ export default async function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <UserProvider user={user} accessToken={accessToken} />
+          <UserProvider user={user}/>
           {data?.user && <Navbar />}
           <main className="container mx-auto">
             {children}

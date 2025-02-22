@@ -1,26 +1,26 @@
 "use client";
-import { useEffect, useState } from "react";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
+import React, { useEffect, useState } from "react";
+import { Button } from "src/components/ui/button";
+import { Checkbox } from "src/components/ui/checkbox";
 import { Trash2, Edit2, X, Check } from "lucide-react";
-import { TaskService } from "@/services/task-service";
-import { Task } from "@/modules/tasks/domain/entities/task";
-import { CreateTaskDto } from "@/modules/tasks/domain/dto/create-task.dto";
-import { UpdateTaskDto } from "@/modules/tasks/domain/dto/update-task.dto";
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { TaskService } from "src/services/task-service";
+import { Task } from "src/modules/tasks/domain/entities/task";
+import { CreateTaskDto } from "src/modules/tasks/domain/dto/create-task.dto";
+import { UpdateTaskDto } from "src/modules/tasks/domain/dto/update-task.dto";
+import { Card, CardHeader, CardTitle, CardContent } from "src/components/ui/card";
 import { format, set } from "date-fns";
 import { Calendar as CalendarIcon } from "lucide-react";
-import { cn } from "@/lib/utils";
-import { Calendar } from "@/components/ui/calendar";
+import { cn } from "src/lib/utils";
+import { Calendar } from "src/components/ui/calendar";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "@/components/ui/popover";
-import { useUserStore } from "@/store/user-store";
-import { Skeleton } from "@/components/ui/skeleton";
+} from "src/components/ui/popover";
+import { useUserStore } from "src/store/user-store";
+import { Skeleton } from "src/components/ui/skeleton";
 import DatePicker from "./components/custom/date-picker";
+import { Input } from "src/components/ui/input";
 
 export default function TodoList() {
   const taskService = new TaskService();

@@ -1,4 +1,4 @@
-import { DatabaseService } from '@/modules/database/application/database-service';
+import { DatabaseService } from 'src/modules/database/application/database-service';
 import { DrizzleTaskRepository } from './drizzle/drizzle-task-repository';
 import { TaskRepository } from './task-repository';
 

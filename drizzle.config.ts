@@ -1,4 +1,4 @@
-import { DATABASE_URL } from '@/config';
+import { DATABASE_URL } from 'src/config';
 import { defineConfig } from 'drizzle-kit';
 
 export default defineConfig({

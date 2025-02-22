@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
-import { TaskRepositoryFactory } from '@/modules/tasks/infrastructure/task-repository.factory'
-import { UpdateTaskUseCase } from '@/modules/tasks/application/update-task.use-case'
-import { DeleteTaskUseCase } from '@/modules/tasks/application/delete-task.use-case'
+import { TaskRepositoryFactory } from 'src/modules/tasks/infrastructure/task-repository.factory'
+import { UpdateTaskUseCase } from 'src/modules/tasks/application/update-task.use-case'
+import { DeleteTaskUseCase } from 'src/modules/tasks/application/delete-task.use-case'
 
 const taskRepository = TaskRepositoryFactory()
 const updateTaskUseCase = new UpdateTaskUseCase(taskRepository)

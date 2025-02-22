@@ -1,6 +1,6 @@
-import { login, signup } from "@/app/login/actions";
-import GoogleOneTap from "@/app/components/auth/google-one-tap";
-import MicrosoftOneTap from "@/app/components/auth/microsoft-one-tap";
+import { login, signup } from "src/app/login/actions";
+import GoogleOneTap from "src/app/components/auth/google-one-tap";
+import MicrosoftOneTap from "src/app/components/auth/microsoft-one-tap";
 export default async function LoginPage() {
 
 

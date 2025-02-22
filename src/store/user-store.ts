@@ -1,5 +1,5 @@
 import { create } from 'zustand'
-import { User } from '@/modules/user/domain/interface'
+import { User } from 'src/modules/user/domain/interface'
 
 interface UserState {
   user: User | null

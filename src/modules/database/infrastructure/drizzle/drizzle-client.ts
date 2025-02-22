@@ -1,8 +1,8 @@
 import { drizzle, PostgresJsDatabase } from 'drizzle-orm/postgres-js';
 import postgres from 'postgres';
 
-import { DATABASE_URL } from '@/config';
-import * as schema from '@/modules/database/infrastructure/drizzle/schema';
+import { DATABASE_URL } from 'src/config';
+import * as schema from 'src/modules/database/infrastructure/drizzle/schema';
 
 export class DrizzleClient {
   private static instance: PostgresJsDatabase<typeof schema>;

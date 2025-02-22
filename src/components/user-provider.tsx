@@ -1,18 +1,17 @@
 'use client'
 
 import { useEffect } from 'react'
-import { useUserStore } from "@/store/user-store"
+import { useUserStore } from "src/store/user-store"
 
 interface UserProviderProps {
   user: {
     id: string;
     email: string;
   } | null;
-  accessToken: string | null;
 }
 
-export function UserProvider({ user, accessToken }: UserProviderProps) {
-  const { setUser, setAccessToken } = useUserStore()
+export function UserProvider({ user }: UserProviderProps) {
+  const { setUser } = useUserStore()
 
   useEffect(() => {
     if (user?.id && user?.email) {
@@ -20,9 +19,6 @@ export function UserProvider({ user, accessToken }: UserProviderProps) {
         id: user.id,
         email: user.email,
       })
-      if (accessToken) {
-        setAccessToken(accessToken)
-      }
     }
   }, [user, setUser])
 
