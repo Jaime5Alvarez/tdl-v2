@@ -41,7 +41,7 @@ export default defineConfig({
       use: {
         ...devices["Desktop Chrome"],
         // Use prepared auth state.
-        storageState: "/playwright/.auth/user.json",
+        storageState: "e2e-tests/playwright/.auth/user.json",
       },
     },
 
