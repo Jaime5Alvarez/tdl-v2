@@ -1,14 +1,16 @@
+import dotenv from "dotenv";
 
-
+dotenv.config(); // This will load your .env file
 const requiredEnvVars = [
   "PORT",
   "NODE_ENV",
   "DATABASE_URL",
-  "USER_ID_TESTING"
+  "USER_ID_TESTING",
+  "TESTING_USER_EMAIL",
+  "TESTING_USER_PASSWORD",
 ] as const;
 
-const optionalEnvVars = [
-] as const;
+const optionalEnvVars = [] as const;
 
 console.info("READING ENVIRONMENT VARIABLES");
 
@@ -18,7 +20,7 @@ requiredEnvVars.forEach((key) => {
   }
 });
 
-function getRequiredEnvVar(key: typeof requiredEnvVars[number]): string {
+function getRequiredEnvVar(key: (typeof requiredEnvVars)[number]): string {
   const value = process.env[key];
   if (!value) {
     throw new Error(`La variable de entorno ${key} no está definida`);
@@ -26,20 +28,26 @@ function getRequiredEnvVar(key: typeof requiredEnvVars[number]): string {
   return value;
 }
 
-function getOptionalEnvVar(key: typeof optionalEnvVars[number]): string | undefined {
+function getOptionalEnvVar(
+  key: (typeof optionalEnvVars)[number]
+): string | undefined {
   return process.env[key] || undefined;
 }
 
 export const {
-PORT,
-NODE_ENV,
-DATABASE_URL,
-USER_ID_TESTING
+  PORT,
+  NODE_ENV,
+  DATABASE_URL,
+  USER_ID_TESTING,
+  TESTING_USER_EMAIL,
+  TESTING_USER_PASSWORD,
 } = {
-PORT: getRequiredEnvVar('PORT'),
-NODE_ENV: getRequiredEnvVar('NODE_ENV'),
-DATABASE_URL: getRequiredEnvVar('DATABASE_URL'),
-USER_ID_TESTING: getRequiredEnvVar('USER_ID_TESTING')
+  PORT: getRequiredEnvVar("PORT"),
+  NODE_ENV: getRequiredEnvVar("NODE_ENV"),
+  DATABASE_URL: getRequiredEnvVar("DATABASE_URL"),
+  USER_ID_TESTING: getRequiredEnvVar("USER_ID_TESTING"),
+  TESTING_USER_EMAIL: getRequiredEnvVar("TESTING_USER_EMAIL"),
+  TESTING_USER_PASSWORD: getRequiredEnvVar("TESTING_USER_PASSWORD"),
 } as const;
 
 export const isDebug = (): boolean => {
@@ -47,5 +55,3 @@ export const isDebug = (): boolean => {
   isDebugMode && console.warn("ATTENTION: NODE_ENV is set to development");
   return isDebugMode;
 };
-
-

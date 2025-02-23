@@ -1,6 +1,6 @@
 import { TaskRepositoryFactory } from "src/modules/tasks/infrastructure/task-repository.factory";
 import { test, describe, expect } from "vitest";
-import { userInfoTesting } from "src/__tests__/setUpTests";
+import { userInfoTesting } from "../../../../setUpTests";
 import { randomUUID } from "crypto";
 
 describe("DrizzleTaskRepository", () => {
